@@ -49,4 +49,5 @@ sudo mv -T "$site/current.new" "$site/current"
 ls -1t "$site" | grep -vx -e current -e "$build" | tail -n +"$keep" | while read -r old; do sudo rm -rf "${site:?}/$old"; done
 echo "Выложена сборка $build"
 '
-tar -C dist -czf - . | ssh "${SSH_OPTIONS[@]}" "$sshAlias" "bash -c $(printf '%q' "$REMOTE") deploy $(printf '%q' "$build") $SITE $KEEP"
+# macOS extended attributes stay home: GNU tar on the host would warn on every file
+COPYFILE_DISABLE=1 tar --no-xattrs --no-mac-metadata -C dist -czf - . | ssh "${SSH_OPTIONS[@]}" "$sshAlias" "bash -c $(printf '%q' "$REMOTE") deploy $(printf '%q' "$build") $SITE $KEEP"
