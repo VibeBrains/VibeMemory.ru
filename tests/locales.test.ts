@@ -151,12 +151,13 @@ describe('sources', () => {
 })
 
 /**
- * A fused line splits its words with markup — one letter of each sits in a plate of its own — so its text nodes are
- * fragments no catalog holds. Each `data-fused` element is put back as its whole text, which the catalog must hold
+ * A fused line splits its words with markup — one letter of each sits in a plate of its own — and a joined line puts
+ * links inside a sentence, so their text nodes are fragments no catalog holds. Each `data-fused` and `data-joined`
+ * element is put back as its whole text, which the catalog must hold
  */
 const joinFused = (html: string): string => {
   let out = html
-  for (let start = out.search(/<span[^>]*\sdata-fused[\s>=]/); start >= 0; start = out.search(/<span[^>]*\sdata-fused[\s>=]/)) {
+  for (let start = out.search(/<span[^>]*\sdata-(?:fused|joined)[\s>=]/); start >= 0; start = out.search(/<span[^>]*\sdata-(?:fused|joined)[\s>=]/)) {
     const open = out.indexOf('>', start) + 1
     let depth = 1
     let at = open

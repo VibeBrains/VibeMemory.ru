@@ -27,6 +27,20 @@ const plated = (word: string) => {
 }
 const accentWords = t('hero.titleAccent').split(' ').map(plated)
 
+// The agents line names the owner's own agents as links to their releases: the catalog string keeps the sentence, the
+// placeholders mark where each link stands
+const AGENT_LINKS: Record<string, { name: string; href: string }> = {
+  vibeide: { name: 'VibeIDE', href: links.vibeideReleases },
+  vibeidea: { name: 'VibeIDEA', href: links.vibeideaReleases },
+}
+const agentsLine = t('hero.leadAgents')
+  .split(/(\{\w+\})/)
+  .map((part) => {
+    const name = /^\{(\w+)\}$/.exec(part)?.[1]
+    const link = name === undefined ? undefined : AGENT_LINKS[name]
+    return { text: part, link }
+  })
+
 // Illustrative records: who wrote each one and through which agent
 const records: readonly { text: Key; member: Key; agent: string }[] = [
   { text: 'hero.card.r1', member: 'people.anna', agent: 'Codex' },
@@ -59,7 +73,22 @@ const records: readonly { text: Key; member: Key; agent: string }[] = [
           }
         </span>
       </h1>
-      <p class="hero-lead" data-reveal style="--reveal-i: 2"><Lines text={t('hero.lead')} /></p>
+      <p class="hero-lead" data-reveal style="--reveal-i: 2">
+        <span class="ln" data-joined>
+          {
+            agentsLine.map((part) =>
+              part.link ? (
+                <a href={part.link.href} rel="noopener">
+                  {part.link.name}
+                </a>
+              ) : (
+                part.text
+              ),
+            )
+          }
+        </span>
+        <Lines text={t('hero.lead')} />
+      </p>
       <div class="hero-cta" data-reveal style="--reveal-i: 3">
         <a class="btn btn--primary btn--lg" href={links.start}>{t('hero.primary')}</a>
         <a class="btn btn--ghost btn--lg" href={links.signIn}>{t('hero.secondary')}</a>

@@ -8,6 +8,9 @@ export const links = {
   download: `${CABINET_URL}/download`,
   terms: `${CABINET_URL}/terms`,
   policy: `${CABINET_URL}/policy`,
+  // the owner's own agents that speak the memory natively: their releases, where a visitor gets them
+  vibeideReleases: 'https://github.com/VibeBrains/VibeIDE/releases',
+  vibeideaReleases: 'https://github.com/VibeBrains/VibeIDEA/releases',
 } as const
 
 /** The command the cabinet prints for connecting an agent, without the agent id that ends it */
