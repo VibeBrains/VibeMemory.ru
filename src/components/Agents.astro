@@ -1,0 +1,148 @@
+---
+import { agents } from '../config/agents'
+import type { Lang } from '../config/languages'
+import { useTranslations } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+---
+
+<section class="agents" aria-labelledby="agents-title">
+  <div class="container">
+    <h2 class="agents-title" id="agents-title" data-reveal>{t('agents.title')}</h2>
+  </div>
+  <div class="marquee" data-reveal>
+    <!-- The list is written twice so the strip loops seamlessly; the copy is hidden from assistive tech -->
+    <div class="track">
+      <ul class="group" aria-label={t('agents.aria')}>
+        {
+          agents.map((agent) => (
+            <li class="chip">
+              <span class="mono" aria-hidden="true">
+                {agent.name.slice(0, 1)}
+              </span>
+              {agent.name}
+            </li>
+          ))
+        }
+        <li class="chip chip--any">{t('agents.any')}</li>
+      </ul>
+      <ul class="group group--copy" aria-hidden="true">
+        {
+          agents.map((agent) => (
+            <li class="chip">
+              <span class="mono">{agent.name.slice(0, 1)}</span>
+              {agent.name}
+            </li>
+          ))
+        }
+        <li class="chip chip--any">{t('agents.any')}</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .agents {
+    padding-block: 24px 40px;
+    border-block: 1px solid var(--border);
+    background: var(--bg-soft);
+  }
+
+  .agents-title {
+    margin-bottom: 24px;
+    color: var(--fg-muted);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .marquee {
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  }
+
+  .track {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding-inline: var(--gutter);
+  }
+
+  .group--copy {
+    display: none;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px 8px 8px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--fg);
+    font-size: 15px;
+    font-weight: 550;
+    white-space: nowrap;
+  }
+
+  .mono {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--brand-soft);
+    color: var(--brand-bright);
+    font-family: var(--font-accent);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .chip--any {
+    padding-left: 16px;
+    border-style: dashed;
+    color: var(--fg-muted);
+  }
+
+  /* With motion allowed the chips run as an endless strip; otherwise they stay a centred, wrapping list */
+  @media (prefers-reduced-motion: no-preference) {
+    .track {
+      justify-content: flex-start;
+      width: max-content;
+      animation: marquee 36s linear infinite;
+    }
+
+    .marquee:hover .track {
+      animation-play-state: paused;
+    }
+
+    .group {
+      flex-wrap: nowrap;
+      padding-inline: 0 10px;
+    }
+
+    .group--copy {
+      display: flex;
+    }
+  }
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+</style>

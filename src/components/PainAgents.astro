@@ -1,0 +1,339 @@
+---
+import { agents } from '../config/agents'
+import type { Lang } from '../config/languages'
+import { useTranslations } from '../i18n'
+import { nextMarkId } from '../scripts/markIds'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+
+// Five agents around one hub: the count is named in the figure's text alternative
+const PICKED = ['claude-code', 'codex', 'cursor', 'zed', 'vibeide'] as const
+const picked = PICKED.map((id) => agents.find((agent) => agent.id === id)).filter((agent) => agent !== undefined)
+
+const VIEW_W = 440
+const VIEW_H = 400
+const CX = VIEW_W / 2
+const CY = VIEW_H / 2
+const RADIUS = 155
+const PILL_H = 38
+const PILL_CHAR_W = 9
+const PILL_PAD = 28
+const HUB_W = 190
+const HUB_H = 76
+
+const nodes = picked.map((agent, i) => {
+  // Start at the top and walk clockwise
+  const angle = -Math.PI / 2 + (i * 2 * Math.PI) / picked.length
+  const x = Math.round(CX + RADIUS * Math.cos(angle))
+  const y = Math.round(CY + RADIUS * Math.sin(angle))
+  const w = PILL_PAD + agent.name.length * PILL_CHAR_W
+  return { name: agent.name, x, y, w, i }
+})
+
+const maskId = `pain1-mark-${nextMarkId()}`
+---
+
+<div class="fig" data-play role="img" aria-label={t('pain1.figure')}>
+  <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id="pain1-glow">
+        <stop offset="0" stop-color="#2e5be4" stop-opacity="0.55"></stop>
+        <stop offset="1" stop-color="#2e5be4" stop-opacity="0"></stop>
+      </radialGradient>
+      <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32">
+        <rect width="32" height="32" fill="#fff"></rect>
+        <circle cx="16" cy="21" r="5.5" fill="#000"></circle>
+      </mask>
+    </defs>
+
+    <circle class="halo" cx={CX} cy={CY} r="130" fill="url(#pain1-glow)"></circle>
+    <circle class="orbit" cx={CX} cy={CY} r={RADIUS} fill="none"></circle>
+
+    {
+      nodes.map((node) => (
+        <g style={`--i: ${node.i}`}>
+          <path class="link" d={`M${node.x} ${node.y}L${CX} ${CY}`} pathLength="100" />
+          <path class="flow flow-in" d={`M${node.x} ${node.y}L${CX} ${CY}`} pathLength="100" />
+          <path class="flow flow-out" d={`M${CX} ${CY}L${node.x} ${node.y}`} pathLength="100" />
+        </g>
+      ))
+    }
+
+    <g class="hub">
+      <rect
+        class="hub-pulse"
+        x={CX - HUB_W / 2 - 6}
+        y={CY - HUB_H / 2 - 6}
+        width={HUB_W + 12}
+        height={HUB_H + 12}
+        rx="22"
+      ></rect>
+      <rect class="hub-box" x={CX - HUB_W / 2} y={CY - HUB_H / 2} width={HUB_W} height={HUB_H} rx="18"></rect>
+      <g transform={`translate(${CX - HUB_W / 2 + 14} ${CY - 18}) scale(1.125)`}>
+        <rect width="32" height="32" rx="7" fill="#3c6cdc"></rect>
+        <g
+          fill="none"
+          stroke="#eff6ff"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          mask={`url(#${maskId})`}
+        >
+          <path d="M24 24V8l-8 10" stroke-opacity=".5"></path>
+          <path d="M8 24V8l8 10"></path>
+        </g>
+        <circle cx="16" cy="21" r="4.5" fill="#eff6ff"></circle>
+      </g>
+      <text class="hub-title" x={CX - HUB_W / 2 + 60} y={CY - 1}>{t('pain1.hub')}</text>
+      <text class="hub-sub" x={CX - HUB_W / 2 + 60} y={CY + 19}>{t('pain1.hubSub')}</text>
+    </g>
+
+    {
+      nodes.map((node) => (
+        <g class="agent" style={`--i: ${node.i}`}>
+          <rect
+            class="agent-box"
+            x={node.x - node.w / 2}
+            y={node.y - PILL_H / 2}
+            width={node.w}
+            height={PILL_H}
+            rx={PILL_H / 2}
+          />
+          <text class="agent-name" x={node.x} y={node.y + 6} text-anchor="middle">
+            {node.name}
+          </text>
+        </g>
+      ))
+    }
+  </svg>
+</div>
+
+<style>
+  .fig {
+    --play: paused;
+    position: relative;
+    max-width: 520px;
+    margin-inline: auto;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: radial-gradient(circle at 50% 50%, rgb(46 91 228 / 0.08), transparent 70%), var(--surface);
+  }
+
+  .fig.is-playing {
+    --play: running;
+  }
+
+  svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .orbit {
+    stroke: rgb(255 255 255 / 0.06);
+    stroke-dasharray: 2 6;
+  }
+
+  .link {
+    fill: none;
+    stroke: rgb(124 157 255 / 0.4);
+    stroke-width: 1.5;
+  }
+
+  .flow {
+    display: none;
+    fill: none;
+    stroke: #b9c9ff;
+    stroke-width: 7;
+    stroke-linecap: round;
+    stroke-dasharray: 0 200;
+    stroke-dashoffset: 200;
+  }
+
+  .hub-box {
+    fill: #18181b;
+    stroke: var(--brand);
+    stroke-width: 1.5;
+  }
+
+  .hub-pulse {
+    fill: none;
+    stroke: var(--brand-bright);
+    stroke-width: 1.5;
+    opacity: 0.25;
+  }
+
+  .hub-title {
+    fill: var(--fg);
+    font-family: var(--font-body);
+    font-size: 17px;
+    font-weight: 650;
+  }
+
+  .hub-sub {
+    fill: var(--fg-muted);
+    font-family: var(--font-accent);
+    font-size: 13px;
+  }
+
+  .agent-box {
+    fill: rgb(46 91 228 / 0.16);
+    stroke: var(--brand-bright);
+    stroke-width: 1.2;
+  }
+
+  .agent-name {
+    fill: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 550;
+  }
+
+  /*
+   * Loop of 6 s after the links draw in:
+   * each agent sends what it learned to the hub, the hub lights up, and the knowledge goes back out to all agents
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .link {
+      stroke-dasharray: 100;
+      animation: link-draw 1.1s var(--ease-out) both;
+      animation-delay: calc(var(--i) * 0.08s);
+    }
+
+    .flow {
+      display: inline;
+    }
+
+    .flow-in {
+      animation: flow-in 6s linear infinite both;
+      animation-delay: calc(1.2s + var(--i) * 0.35s);
+    }
+
+    .flow-out {
+      animation: flow-out 6s linear 1.2s infinite both;
+    }
+
+    .hub-pulse {
+      animation: hub-pulse 6s ease-out 1.2s infinite both;
+    }
+
+    .agent-box {
+      animation: agent-box 6s ease 1.2s infinite both;
+    }
+
+    .agent-name {
+      animation: agent-name 6s ease 1.2s infinite both;
+    }
+
+    /* Declared after the shorthands, which reset it: the loop runs only while the figure is on screen */
+    .link,
+    .flow,
+    .hub-pulse,
+    .agent-box,
+    .agent-name {
+      animation-play-state: var(--play);
+    }
+  }
+
+  @keyframes link-draw {
+    from {
+      stroke-dashoffset: 100;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes flow-in {
+    0% {
+      stroke-dashoffset: 200;
+      opacity: 0;
+    }
+    2% {
+      opacity: 1;
+    }
+    18% {
+      stroke-dashoffset: 100;
+      opacity: 1;
+    }
+    19%,
+    100% {
+      stroke-dashoffset: 100;
+      opacity: 0;
+    }
+  }
+
+  @keyframes flow-out {
+    0%,
+    50% {
+      stroke-dashoffset: 200;
+      opacity: 0;
+    }
+    51% {
+      opacity: 1;
+    }
+    67% {
+      stroke-dashoffset: 100;
+      opacity: 1;
+    }
+    69%,
+    100% {
+      stroke-dashoffset: 100;
+      opacity: 0;
+    }
+  }
+
+  @keyframes hub-pulse {
+    0%,
+    38% {
+      opacity: 0.2;
+      stroke-width: 1.5;
+    }
+    46% {
+      opacity: 1;
+      stroke-width: 4;
+    }
+    62%,
+    100% {
+      opacity: 0.2;
+      stroke-width: 1.5;
+    }
+  }
+
+  @keyframes agent-box {
+    0%,
+    64% {
+      fill: rgb(255 255 255 / 0.03);
+      stroke: rgb(255 255 255 / 0.18);
+    }
+    69%,
+    92% {
+      fill: rgb(46 91 228 / 0.22);
+      stroke: var(--brand-bright);
+    }
+    100% {
+      fill: rgb(255 255 255 / 0.03);
+      stroke: rgb(255 255 255 / 0.18);
+    }
+  }
+
+  @keyframes agent-name {
+    0%,
+    64% {
+      fill: var(--fg-muted);
+    }
+    69%,
+    92% {
+      fill: var(--fg);
+    }
+    100% {
+      fill: var(--fg-muted);
+    }
+  }
+</style>

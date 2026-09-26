@@ -1,0 +1,65 @@
+---
+import PainRow from './PainRow.astro'
+import PainAgents from './PainAgents.astro'
+import PainTeam from './PainTeam.astro'
+import PainSession from './PainSession.astro'
+import Lines from './Lines.astro'
+import type { Lang } from '../config/languages'
+import { useTranslations } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+---
+
+<section class="section pains" id="why" aria-labelledby="pains-title">
+  <div class="container">
+    <div class="section-head section-head--center" data-reveal>
+      <p class="eyebrow">{t('pains.eyebrow')}</p>
+      <h2 class="section-title" id="pains-title">{t('pains.title')}</h2>
+      <p class="section-lead"><Lines text={t('pains.lead')} /></p>
+    </div>
+
+    <div class="pain-list">
+      <PainRow
+        tag={t('pain1.tag')}
+        title={t('pain1.title')}
+        text={t('pain1.text')}
+        fixLabel={t('pains.fixLabel')}
+        fix={t('pain1.fix')}
+      >
+        <PainAgents lang={lang} />
+      </PainRow>
+      <PainRow
+        tag={t('pain2.tag')}
+        title={t('pain2.title')}
+        text={t('pain2.text')}
+        fixLabel={t('pains.fixLabel')}
+        fix={t('pain2.fix')}
+        reverse
+      >
+        <PainTeam lang={lang} />
+      </PainRow>
+      <PainRow
+        tag={t('pain3.tag')}
+        title={t('pain3.title')}
+        text={t('pain3.text')}
+        fixLabel={t('pains.fixLabel')}
+        fix={t('pain3.fix')}
+        wide
+      >
+        <PainSession lang={lang} />
+      </PainRow>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pain-list {
+    display: grid;
+    gap: clamp(88px, 12vw, 144px);
+  }
+</style>

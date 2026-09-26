@@ -1,0 +1,316 @@
+---
+import Lines from './Lines.astro'
+import Mark from './Mark.astro'
+import type { Lang } from '../config/languages'
+import { links } from '../config/site'
+import { useTranslations, type Key } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+
+// Illustrative records: who wrote each one and through which agent
+const records: readonly { text: Key; member: Key; agent: string }[] = [
+  { text: 'hero.card.r1', member: 'people.anna', agent: 'Codex' },
+  { text: 'hero.card.r2', member: 'people.max', agent: 'Claude Code' },
+  { text: 'hero.card.r3', member: 'people.lena', agent: 'Cursor' },
+  { text: 'hero.card.r4', member: 'people.ivan', agent: 'VibeIDE' },
+]
+---
+
+<section class="hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="hero-grid-bg" aria-hidden="true"></div>
+  <div class="container hero-row">
+    <div class="hero-copy">
+      <p class="eyebrow" data-reveal>{t('hero.eyebrow')}</p>
+      <h1 class="hero-title" data-reveal style="--reveal-i: 1">
+        <span class="ln">{t('hero.title')}</span>
+        <span class="ln hero-accent">{t('hero.titleAccent')}</span>
+      </h1>
+      <p class="hero-lead" data-reveal style="--reveal-i: 2"><Lines text={t('hero.lead')} /></p>
+      <div class="hero-cta" data-reveal style="--reveal-i: 3">
+        <a class="btn btn--primary btn--lg" href={links.start}>{t('hero.primary')}</a>
+        <a class="btn btn--ghost btn--lg" href={links.signIn}>{t('hero.secondary')}</a>
+      </div>
+      <p class="hero-note" data-reveal style="--reveal-i: 4">
+        {t('hero.note').split('\n').map((line) => <span>{line}</span>)}
+      </p>
+    </div>
+
+    <div class="hero-visual" data-reveal style="--reveal-i: 2">
+      <div class="memory-card" role="img" aria-label={t('hero.card.aria')}>
+        <div class="memory-head" aria-hidden="true">
+          <Mark size={28} animated />
+          <div class="memory-title">
+            <span class="memory-label">{t('hero.card.label')}</span>
+            <span class="memory-project">{t('hero.card.project')}</span>
+          </div>
+          <span class="memory-status"><span class="dot"></span>{t('hero.card.status')}</span>
+        </div>
+        <ul class="memory-list" aria-hidden="true">
+          {
+            records.map((record, i) => (
+              <li class="memory-record" style={`--i: ${i}`}>
+                <span class="record-avatar">{t(record.member).slice(1, 2).toUpperCase()}</span>
+                <span class="record-body">
+                  <span class="record-text">{t(record.text)}</span>
+                  <span class="record-by">{t('record.by', { member: t(record.member), agent: record.agent })}</span>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    padding-block: 88px 104px;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    inset: -30% -10% auto 30%;
+    height: 780px;
+    background:
+      radial-gradient(closest-side, rgb(46 91 228 / 0.32), transparent 70%),
+      radial-gradient(closest-side at 30% 70%, rgb(124 157 255 / 0.12), transparent 70%);
+    filter: blur(20px);
+    pointer-events: none;
+  }
+
+  .hero-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 70% 60% at 60% 30%, #000 20%, transparent 75%);
+    pointer-events: none;
+  }
+
+  .hero-row {
+    position: relative;
+    display: grid;
+    gap: 56px;
+    align-items: center;
+  }
+
+  @media (min-width: 1000px) {
+    .hero-row {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: 64px;
+    }
+  }
+
+  .hero-copy {
+    display: grid;
+    gap: 24px;
+    justify-items: start;
+  }
+
+  .hero-title {
+    font-size: clamp(36px, 5vw, 58px);
+    line-height: 1.05;
+  }
+
+  .hero-accent {
+    background: linear-gradient(92deg, var(--brand-bright), #b9c9ff 60%, var(--brand-bright));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .hero-lead {
+    max-width: 600px;
+    color: var(--fg-muted);
+    font-size: 18px;
+    display: grid;
+    gap: 6px;
+  }
+
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .hero-note {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    color: var(--fg-faint);
+    font-family: var(--font-accent);
+    font-size: 13px;
+  }
+
+  .hero-note span::before {
+    content: '✓';
+    margin-right: 8px;
+    color: var(--success);
+  }
+
+  .memory-card {
+    position: relative;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, rgb(24 24 27 / 0.92), rgb(15 15 19 / 0.92));
+    box-shadow:
+      0 30px 80px -30px rgb(0 0 0 / 0.8),
+      0 0 0 1px rgb(46 91 228 / 0.1),
+      0 0 80px -20px var(--brand-glow);
+    overflow: hidden;
+  }
+
+  .memory-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .memory-title {
+    display: grid;
+    min-width: 0;
+    line-height: 1.3;
+  }
+
+  .memory-label {
+    color: var(--fg);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .memory-project {
+    color: var(--fg-faint);
+    font-family: var(--font-accent);
+    font-size: 13px;
+  }
+
+  .memory-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    padding: 4px 10px;
+    border: 1px solid rgb(74 222 128 / 0.25);
+    border-radius: 999px;
+    color: var(--success);
+    font-family: var(--font-accent);
+    font-size: 12px;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .memory-list {
+    display: grid;
+    gap: 2px;
+    padding: 10px;
+  }
+
+  .memory-record {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+  }
+
+  .record-avatar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--brand-soft);
+    color: var(--brand-bright);
+    font-family: var(--font-accent);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .record-body {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .record-text {
+    color: var(--fg);
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .record-by {
+    color: var(--fg-faint);
+    font-family: var(--font-accent);
+    font-size: 12px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .memory-status .dot {
+      animation: live 2s ease-in-out infinite;
+    }
+
+    /* Records land one after another, then a highlight keeps walking the list: agents reading the same memory */
+    .memory-record {
+      animation:
+        record-in 0.6s var(--ease-out) both,
+        record-read 8s ease-in-out infinite;
+      animation-delay:
+        calc(0.5s + var(--i) * 0.35s),
+        calc(2.4s + var(--i) * 2s);
+    }
+  }
+
+  @keyframes live {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.35;
+    }
+  }
+
+  @keyframes record-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes record-read {
+    0%,
+    25%,
+    100% {
+      border-color: transparent;
+      background: transparent;
+    }
+    6%,
+    18% {
+      border-color: rgb(46 91 228 / 0.35);
+      background: rgb(46 91 228 / 0.08);
+    }
+  }
+</style>

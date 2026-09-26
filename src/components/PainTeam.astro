@@ -1,0 +1,408 @@
+---
+import type { Lang } from '../config/languages'
+import { useTranslations, type Key } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+
+// The first member is the author: the record starts at their agent and reaches everyone else
+const members: readonly { member: Key; agent: string }[] = [
+  { member: 'people.anna', agent: 'Codex' },
+  { member: 'people.max', agent: 'Claude Code' },
+  { member: 'people.lena', agent: 'Cursor' },
+  { member: 'people.ivan', agent: 'Zed' },
+]
+const [author] = members
+---
+
+<div class="team" data-play role="img" aria-label={t('pain2.figure')}>
+  <div class="team-inner" aria-hidden="true">
+    <div class="ripple"><span></span><span></span></div>
+    <div class="record">
+      <p class="record-label"><span class="record-dot"></span>{t('pain2.recordLabel')}</p>
+      <p class="record-text">{t('pain2.record')}</p>
+      <p class="record-by">{t('record.by', { member: t(author.member), agent: author.agent })}</p>
+    </div>
+    <ul class="members">
+      {
+        members.map((item, i) => (
+          <li class:list={['member', { 'member--author': i === 0 }]} style={`--i: ${i}`}>
+            <span class="beam" />
+            <span class="avatar">{t(item.member).slice(1, 2).toUpperCase()}</span>
+            <span class="handle">{t(item.member)}</span>
+            <span class="agent">{item.agent}</span>
+            {i === 0 ? (
+              <span class="status status--author">{t('pain2.status.author')}</span>
+            ) : (
+              <span class="status-slot">
+                <span class="status status--waiting">{t('pain2.status.waiting')}</span>
+                <span class="status status--known">{t('pain2.status.known')}</span>
+              </span>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</div>
+
+<style>
+  .team {
+    --play: paused;
+    position: relative;
+    padding: 28px 20px;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .team.is-playing {
+    --play: running;
+  }
+
+  .team-inner {
+    position: relative;
+    display: grid;
+    gap: 36px;
+  }
+
+  .ripple {
+    position: absolute;
+    top: 56px;
+    left: 50%;
+    width: 0;
+    height: 0;
+  }
+
+  .ripple span {
+    position: absolute;
+    left: -260px;
+    top: -260px;
+    width: 520px;
+    height: 520px;
+    border: 1px solid rgb(124 157 255 / 0.35);
+    border-radius: 50%;
+    opacity: 0;
+  }
+
+  .record {
+    position: relative;
+    display: grid;
+    gap: 6px;
+    width: min(100%, 440px);
+    margin-inline: auto;
+    padding: 16px 18px;
+    border: 1px solid rgb(124 157 255 / 0.45);
+    border-radius: 16px;
+    background: linear-gradient(180deg, #1b2240, #141828);
+    box-shadow: 0 0 60px -18px var(--brand-glow);
+  }
+
+  .record-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--brand-bright);
+    font-family: var(--font-accent);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .record-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .record-text {
+    color: var(--fg);
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .record-by {
+    color: var(--fg-muted);
+    font-family: var(--font-accent);
+    font-size: 13px;
+  }
+
+  .members {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  @media (min-width: 560px) {
+    .members {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .member {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    padding: 16px 8px 14px;
+    border: 1px solid rgb(124 157 255 / 0.4);
+    border-radius: 14px;
+    background: rgb(46 91 228 / 0.1);
+    text-align: center;
+  }
+
+  .member--author {
+    border-color: var(--brand);
+    background: rgb(46 91 228 / 0.2);
+  }
+
+  .beam {
+    display: none;
+  }
+
+  @media (min-width: 560px) {
+    .beam {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      display: block;
+      width: 2px;
+      height: 37px;
+      background: linear-gradient(180deg, rgb(124 157 255 / 0.05), rgb(124 157 255 / 0.45));
+    }
+  }
+
+  .avatar {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    margin-bottom: 4px;
+    border-radius: 50%;
+    background: var(--surface-3);
+    color: var(--fg);
+    font-family: var(--font-accent);
+    font-weight: 700;
+  }
+
+  .member--author .avatar {
+    background: var(--brand);
+    color: #fff;
+  }
+
+  .handle {
+    color: var(--fg);
+    font-family: var(--font-accent);
+    font-size: 14px;
+  }
+
+  .agent {
+    color: var(--fg-muted);
+    font-size: 13px;
+  }
+
+  .status-slot {
+    display: grid;
+    margin-top: 6px;
+  }
+
+  .status-slot > .status {
+    grid-area: 1 / 1;
+  }
+
+  .status {
+    justify-self: center;
+    margin-top: 6px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-family: var(--font-accent);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .status-slot .status {
+    margin-top: 0;
+  }
+
+  .status--author {
+    background: var(--brand);
+    color: #fff;
+  }
+
+  .status--waiting {
+    border: 1px dashed rgb(255 255 255 / 0.2);
+    color: var(--fg-faint);
+    visibility: hidden;
+  }
+
+  .status--known {
+    background: rgb(74 222 128 / 0.14);
+    color: var(--success);
+  }
+
+  .status--known::before {
+    content: '✓ ';
+  }
+
+  /*
+   * Loop of 7 s: the author's agent writes the record, a wave goes out,
+   * and one by one the other members' agents switch from "unaware" to "knows"
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .ripple span {
+      animation: ripple 7s ease-out 0.4s infinite both;
+      animation-play-state: var(--play);
+    }
+
+    .ripple span + span {
+      animation-delay: 0.9s;
+      animation-play-state: var(--play);
+    }
+
+    .record {
+      animation: record-pop 7s var(--ease-out) 0.4s infinite both;
+      animation-play-state: var(--play);
+    }
+
+    .member:not(.member--author) {
+      animation: member-lit 7s ease 0.4s infinite both;
+      animation-delay: calc(0.4s + var(--i) * 0.4s);
+      animation-play-state: var(--play);
+    }
+
+    .member:not(.member--author) .beam::after {
+      content: '';
+      position: absolute;
+      left: -3px;
+      top: 0;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #b9c9ff;
+      box-shadow: 0 0 10px #7c9dff;
+      opacity: 0;
+      animation: beam-down 7s linear infinite both;
+      animation-delay: calc(0.4s + var(--i) * 0.4s);
+      animation-play-state: var(--play);
+    }
+
+    .status--waiting {
+      visibility: visible;
+      animation: status-out 7s ease infinite both;
+      animation-delay: calc(0.4s + var(--i) * 0.4s);
+      animation-play-state: var(--play);
+    }
+
+    .status--known {
+      animation: status-in 7s ease infinite both;
+      animation-delay: calc(0.4s + var(--i) * 0.4s);
+      animation-play-state: var(--play);
+    }
+  }
+
+  @keyframes ripple {
+    0% {
+      opacity: 0;
+      transform: scale(0.15);
+    }
+    6% {
+      opacity: 0.9;
+    }
+    40%,
+    100% {
+      opacity: 0;
+      transform: scale(1.3);
+    }
+  }
+
+  @keyframes record-pop {
+    0% {
+      transform: scale(0.94);
+      opacity: 0.4;
+    }
+    8%,
+    100% {
+      transform: none;
+      opacity: 1;
+    }
+  }
+
+  @keyframes beam-down {
+    0%,
+    14% {
+      opacity: 0;
+      transform: translateY(0);
+    }
+    16% {
+      opacity: 1;
+    }
+    24% {
+      opacity: 1;
+      transform: translateY(30px);
+    }
+    26%,
+    100% {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+  }
+
+  @keyframes member-lit {
+    0%,
+    24% {
+      border-color: rgb(255 255 255 / 0.1);
+      background: rgb(255 255 255 / 0.02);
+    }
+    28%,
+    90% {
+      border-color: rgb(124 157 255 / 0.5);
+      background: rgb(46 91 228 / 0.12);
+    }
+    96%,
+    100% {
+      border-color: rgb(255 255 255 / 0.1);
+      background: rgb(255 255 255 / 0.02);
+    }
+  }
+
+  @keyframes status-out {
+    0%,
+    24% {
+      opacity: 1;
+    }
+    27%,
+    92% {
+      opacity: 0;
+    }
+    97%,
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes status-in {
+    0%,
+    24% {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    28%,
+    90% {
+      opacity: 1;
+      transform: none;
+    }
+    95%,
+    100% {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+  }
+</style>

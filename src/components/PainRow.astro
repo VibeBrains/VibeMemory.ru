@@ -1,0 +1,128 @@
+---
+import Lines from './Lines.astro'
+
+/**
+ * One pain: the problem in words on one side, its animated picture on the other
+ * `wide` puts the picture under the words at full width, for a scene that needs room
+ */
+interface Props {
+  tag: string
+  title: string
+  text: string
+  fixLabel: string
+  fix: string
+  reverse?: boolean
+  wide?: boolean
+}
+
+const { tag, title, text, fixLabel, fix, reverse = false, wide = false } = Astro.props
+---
+
+<article class:list={['pain', { 'pain--reverse': reverse, 'pain--wide': wide }]}>
+  <div class="pain-copy" data-reveal>
+    <p class="pain-tag">{tag}</p>
+    <h3 class="pain-title">{title}</h3>
+    <p class="pain-text"><Lines text={text} /></p>
+    <div class="pain-fix">
+      <p class="pain-fix-label">{fixLabel}</p>
+      <p class="pain-fix-text"><Lines text={fix} /></p>
+    </div>
+  </div>
+  <div class="pain-figure" data-reveal style="--reveal-i: 1">
+    <slot />
+  </div>
+</article>
+
+<style>
+  .pain {
+    display: grid;
+    gap: 40px;
+    align-items: center;
+  }
+
+  @media (min-width: 960px) {
+    .pain {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 72px;
+    }
+
+    .pain--reverse .pain-copy {
+      order: 2;
+    }
+
+    .pain--wide {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 48px;
+    }
+
+    .pain--wide .pain-copy {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      column-gap: 72px;
+    }
+
+    .pain--wide .pain-copy > * {
+      grid-column: 1;
+    }
+
+    .pain--wide .pain-copy > .pain-fix {
+      grid-column: 2;
+      grid-row: 1 / span 3;
+      align-self: end;
+    }
+  }
+
+  .pain-copy {
+    display: grid;
+    gap: 18px;
+    align-content: start;
+  }
+
+  .pain-tag {
+    color: var(--fg-faint);
+    font-family: var(--font-accent);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .pain-title {
+    font-size: clamp(28px, 3.6vw, 40px);
+  }
+
+  .pain-text {
+    display: grid;
+    gap: 4px;
+    color: var(--fg-muted);
+    font-size: 17px;
+  }
+
+  .pain-fix {
+    display: grid;
+    gap: 6px;
+    padding: 16px 18px;
+    border: 1px solid rgb(46 91 228 / 0.3);
+    border-left: 3px solid var(--brand);
+    border-radius: 12px;
+    background: linear-gradient(90deg, rgb(46 91 228 / 0.12), rgb(46 91 228 / 0.03));
+  }
+
+  .pain-fix-label {
+    color: var(--brand-bright);
+    font-family: var(--font-accent);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .pain-fix-text {
+    display: grid;
+    gap: 4px;
+    color: var(--fg);
+    font-size: 16px;
+  }
+
+  .pain-figure {
+    min-width: 0;
+  }
+</style>

@@ -1,0 +1,142 @@
+---
+import Lines from './Lines.astro'
+import type { Lang } from '../config/languages'
+import { plans, type SizeUnit } from '../config/pricing'
+import { links } from '../config/site'
+import { useTranslations, type Key } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+
+const sizeKeys: Record<SizeUnit, Key> = { mb: 'pricing.size.mb', gb: 'pricing.size.gb' }
+---
+
+<section class="section pricing" id="pricing" aria-labelledby="pricing-title">
+  <div class="container">
+    <div class="section-head section-head--center" data-reveal>
+      <p class="eyebrow">{t('pricing.eyebrow')}</p>
+      <h2 class="section-title" id="pricing-title">{t('pricing.title')}</h2>
+      <p class="section-lead"><Lines text={t('pricing.lead')} /></p>
+    </div>
+
+    <ul class="plans">
+      {
+        plans.map((plan, i) => {
+          const free = plan.priceRub === 0
+          return (
+            <li class:list={['plan', { 'plan--free': free }]} data-reveal style={`--reveal-i: ${i}`}>
+              <p class="plan-size">{t(sizeKeys[plan.unit], { value: plan.size })}</p>
+              <p class="plan-price">{free ? t('pricing.free') : t('pricing.price', { amount: plan.priceRub })}</p>
+              <p class="plan-period">{free ? t('pricing.freeCaption') : t('pricing.period')}</p>
+              <a class:list={['btn', free ? 'btn--primary' : 'btn--ghost']} href={links.start}>
+                {free ? t('pricing.cta.free') : t('pricing.cta.paid')}
+              </a>
+              {free && <p class="plan-note">{t('pricing.freeNote')}</p>}
+            </li>
+          )
+        })
+      }
+    </ul>
+
+    <p class="pilot" data-reveal><Lines text={t('pricing.pilot')} /></p>
+  </div>
+</section>
+
+<style>
+  .plans {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  @media (min-width: 760px) {
+    .plans {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .plans {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+    }
+  }
+
+  .plan {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: 4px;
+    min-width: 0;
+    padding: 24px 18px 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+  }
+
+  .plan--free {
+    grid-column: 1 / -1;
+    border-color: rgb(124 157 255 / 0.45);
+    background: linear-gradient(180deg, rgb(46 91 228 / 0.16), rgb(46 91 228 / 0.03)), var(--surface);
+    grid-template-rows: auto auto auto auto auto;
+  }
+
+  @media (min-width: 1100px) {
+    .plan--free {
+      grid-column: auto;
+      grid-template-rows: auto auto 1fr auto auto;
+    }
+  }
+
+  .plan-size {
+    color: var(--fg);
+    font-family: var(--font-title);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .plan-price {
+    margin-top: 8px;
+    color: var(--brand-bright);
+    font-family: var(--font-accent);
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .plan-period {
+    margin-bottom: 18px;
+    color: var(--fg-faint);
+    font-size: 14px;
+  }
+
+  .plan .btn {
+    width: 100%;
+    min-height: 42px;
+    padding-inline: 10px;
+    font-size: 15px;
+  }
+
+  .plan-note {
+    margin-top: 12px;
+    color: var(--fg-faint);
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+
+  .pilot {
+    display: grid;
+    gap: 2px;
+    max-width: 680px;
+    margin: 32px auto 0;
+    padding: 16px 20px;
+    border: 1px dashed var(--border-strong);
+    border-radius: 12px;
+    color: var(--fg-muted);
+    font-size: 15px;
+    text-align: center;
+  }
+</style>

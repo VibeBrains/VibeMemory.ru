@@ -1,0 +1,466 @@
+---
+import Mark from './Mark.astro'
+import type { Lang } from '../config/languages'
+import { useTranslations, type Key } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+
+const AGENT = 'Claude Code'
+
+// The conversation both machines share; the last agent line is the one typed on the second computer
+const history: readonly { who: 'user' | 'agent'; key: Key }[] = [
+  { who: 'user', key: 'pain3.chat.user1' },
+  { who: 'agent', key: 'pain3.chat.agent1' },
+  { who: 'user', key: 'pain3.chat.user2' },
+]
+---
+
+<!--
+  Without scripts, or with reduced motion, the figure shows its final state:
+  the laptop is closed and the conversation goes on at the desktop
+  src/scripts/sessionDemo.ts plays the story by switching data-stage
+-->
+<div class="session" data-play data-session-demo role="img" aria-label={t('pain3.figure')}>
+  <div class="devices" aria-hidden="true">
+    <div class="device laptop">
+      <div class="laptop-body">
+        <div class="laptop-lid">
+          <div class="screen">
+            <div class="chat-head"><span class="chat-agent">{AGENT}</span><span>{t('pain3.session')}</span></div>
+            <div class="chat">
+              {history.map((line) => <p class:list={['bubble', `bubble--${line.who}`]}>{t(line.key)}</p>)}
+            </div>
+          </div>
+        </div>
+        <div class="laptop-base"></div>
+      </div>
+      <p class="device-label">{t('pain3.laptop')}</p>
+    </div>
+
+    <div class="transfer">
+      <span class="transfer-track"><i></i><i></i><i></i></span>
+      <span class="transfer-label">{t('pain3.transfer')}</span>
+    </div>
+
+    <div class="device desktop">
+      <div class="monitor">
+        <div class="screen">
+          <div class="screen-off"><Mark size={28} /></div>
+          <div class="screen-on">
+            <div class="chat-head"><span class="chat-agent">{AGENT}</span><span>{t('pain3.session')}</span></div>
+            <div class="chat">
+              {
+                history.map((line, i) => (
+                  <p class:list={['bubble', `bubble--${line.who}`, 'bubble--history']} style={`--i: ${i}`}>
+                    {t(line.key)}
+                  </p>
+                ))
+              }
+              <p class="bubble bubble--agent bubble--new" data-type-target data-text={t('pain3.chat.agent2')}>
+                <span class="typed">{t('pain3.chat.agent2')}</span><span class="typing"><i></i><i></i><i></i></span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="stand"></div>
+      <p class="device-label">{t('pain3.desktop')}</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .session {
+    padding: 28px 20px 20px;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .devices {
+    display: grid;
+    gap: 14px;
+    justify-items: center;
+  }
+
+  @media (min-width: 720px) {
+    .session {
+      padding: 48px 40px 32px;
+    }
+
+    .devices {
+      grid-template-columns: minmax(0, 0.85fr) 96px minmax(0, 1.15fr);
+      align-items: end;
+      gap: 16px;
+    }
+  }
+
+  .device {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .laptop {
+    max-width: 440px;
+  }
+
+  .desktop {
+    max-width: 560px;
+  }
+
+  .device-label {
+    color: var(--fg-muted);
+    font-family: var(--font-accent);
+    font-size: 12px;
+  }
+
+  /* A screen is a chat window scrolled to its end: when space runs out, the oldest lines go first */
+  .screen,
+  .screen-on {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .screen {
+    padding: 10px;
+    border-radius: 6px;
+    background: #0b0d14;
+    overflow: hidden;
+  }
+
+  .chat-head {
+    flex: none;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    color: var(--fg-faint);
+    font-family: var(--font-accent);
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .chat-agent {
+    color: var(--brand-bright);
+  }
+
+  .chat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 6px;
+    min-height: 0;
+    overflow: hidden;
+    mask-image: linear-gradient(180deg, transparent, #000 22px);
+  }
+
+  .bubble {
+    flex: none;
+    max-width: 88%;
+    padding: 6px 9px;
+    border-radius: 10px;
+    font-size: 11.5px;
+    line-height: 1.4;
+  }
+
+  @media (min-width: 720px) {
+    .chat-head {
+      font-size: 11px;
+    }
+
+    .bubble {
+      padding: 7px 11px;
+      font-size: 13px;
+    }
+  }
+
+  .bubble--user {
+    align-self: flex-end;
+    border-bottom-right-radius: 3px;
+    background: var(--brand);
+    color: #fff;
+  }
+
+  .bubble--agent {
+    align-self: flex-start;
+    border-bottom-left-radius: 3px;
+    background: var(--surface-3);
+    color: var(--fg-soft);
+  }
+
+  .bubble--new {
+    border: 1px solid rgb(124 157 255 / 0.5);
+    color: var(--fg);
+  }
+
+  /* Laptop: a lid on a hinge and a thin base */
+  .laptop-body {
+    display: grid;
+    justify-items: center;
+    width: 100%;
+    perspective: 900px;
+  }
+
+  .laptop-lid {
+    width: 86%;
+    aspect-ratio: 16 / 10.5;
+    padding: 7px;
+    border: 1px solid var(--border-strong);
+    border-radius: 12px 12px 3px 3px;
+    background: #1d1d22;
+    transform-origin: 50% 100%;
+    /* Final state: closed; seen from the front, a lowered lid is a thin slab on the base */
+    transform: rotateX(-40deg) scaleY(0.05);
+    filter: brightness(0.45);
+  }
+
+  .laptop-base {
+    width: 100%;
+    height: 10px;
+    border-radius: 2px 2px 10px 10px;
+    background: linear-gradient(180deg, #3a3a42, #232329);
+    box-shadow: 0 10px 24px -8px rgb(0 0 0 / 0.8);
+  }
+
+  /* Desktop: a monitor on a stand */
+  .monitor {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    padding: 8px;
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    background: #1d1d22;
+    box-shadow: 0 0 60px -20px var(--brand-glow);
+  }
+
+  .stand {
+    width: 64px;
+    height: 22px;
+    margin-top: -10px;
+    border-radius: 0 0 6px 6px;
+    background: linear-gradient(180deg, #2a2a31, #1d1d22);
+    box-shadow: 0 6px 0 -2px #2a2a31;
+  }
+
+  .screen-off {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    opacity: 0;
+  }
+
+  .typing {
+    display: none;
+    gap: 4px;
+    padding-block: 4px;
+  }
+
+  .typing i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--fg-muted);
+  }
+
+  /* Transfer between machines: horizontal beside the devices, vertical when they stack */
+  .transfer {
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    align-self: center;
+  }
+
+  .transfer-track {
+    position: relative;
+    display: block;
+    width: 2px;
+    height: 44px;
+    background: linear-gradient(180deg, rgb(124 157 255 / 0.1), rgb(124 157 255 / 0.5), rgb(124 157 255 / 0.1));
+  }
+
+  .transfer-track i {
+    position: absolute;
+    left: -3px;
+    top: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #b9c9ff;
+    box-shadow: 0 0 10px #7c9dff;
+    opacity: 0;
+  }
+
+  .transfer-label {
+    padding: 2px 8px;
+    border: 1px solid rgb(124 157 255 / 0.35);
+    border-radius: 999px;
+    color: var(--brand-bright);
+    font-family: var(--font-accent);
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  @media (min-width: 720px) {
+    .transfer {
+      margin-bottom: 32px;
+    }
+
+    .transfer-track {
+      width: 88px;
+      height: 2px;
+      background: linear-gradient(90deg, rgb(124 157 255 / 0.1), rgb(124 157 255 / 0.5), rgb(124 157 255 / 0.1));
+    }
+
+    .transfer-track i {
+      top: -3px;
+      left: 0;
+    }
+  }
+
+  /*
+   * Stages set by the script:
+   * 0 laptop open, desktop asleep; 1 lid closes; 2 session travels; 3 desktop wakes with the history; 4 agent types; 5 hold
+   */
+  .session[data-stage] .laptop-lid {
+    transition:
+      transform 0.9s cubic-bezier(0.6, 0, 0.3, 1),
+      filter 0.9s;
+  }
+
+  .session[data-stage='0'] .laptop-lid {
+    transform: none;
+    filter: none;
+  }
+
+  .session[data-stage='0'] .screen-on,
+  .session[data-stage='1'] .screen-on,
+  .session[data-stage='2'] .screen-on {
+    opacity: 0;
+  }
+
+  .session[data-stage='0'] .screen-off,
+  .session[data-stage='1'] .screen-off,
+  .session[data-stage='2'] .screen-off {
+    opacity: 0.25;
+  }
+
+  .session[data-stage] .screen-on,
+  .session[data-stage] .screen-off {
+    transition: opacity 0.5s;
+  }
+
+  .session[data-stage='0'] .monitor,
+  .session[data-stage='1'] .monitor,
+  .session[data-stage='2'] .monitor {
+    box-shadow: none;
+  }
+
+  .session[data-stage='2'] .transfer-track i {
+    animation: hop-y 0.9s linear infinite;
+  }
+
+  .session[data-stage='2'] .transfer-track i:nth-child(2) {
+    animation-delay: 0.3s;
+  }
+
+  .session[data-stage='2'] .transfer-track i:nth-child(3) {
+    animation-delay: 0.6s;
+  }
+
+  @media (min-width: 720px) {
+    .session[data-stage='2'] .transfer-track i {
+      animation-name: hop-x;
+    }
+  }
+
+  .session[data-stage='2'] .transfer-label {
+    background: rgb(46 91 228 / 0.2);
+    color: var(--fg);
+  }
+
+  .session[data-stage='3'] .bubble--history {
+    animation: bubble-in 0.4s var(--ease-out) both;
+    animation-delay: calc(var(--i) * 0.12s);
+  }
+
+  .session[data-stage='0'] .bubble--new,
+  .session[data-stage='1'] .bubble--new,
+  .session[data-stage='2'] .bubble--new,
+  .session[data-stage='3'] .bubble--new {
+    visibility: hidden;
+  }
+
+  .session[data-stage='4'].is-waiting .typing {
+    display: flex;
+  }
+
+  .session[data-stage='4'].is-waiting .typed {
+    display: none;
+  }
+
+  .session[data-stage='4'] .typed::after {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 12px;
+    margin-left: 2px;
+    vertical-align: -2px;
+    background: var(--brand-bright);
+    animation: caret 0.8s steps(1) infinite;
+  }
+
+  @keyframes hop-y {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+  }
+
+  @keyframes hop-x {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(84px);
+    }
+  }
+
+  @keyframes bubble-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes caret {
+    50% {
+      opacity: 0;
+    }
+  }
+</style>

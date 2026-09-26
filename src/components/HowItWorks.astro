@@ -1,0 +1,260 @@
+---
+import Lines from './Lines.astro'
+import { connectableAgents, DEFAULT_CONNECT_AGENT } from '../config/agents'
+import type { Lang } from '../config/languages'
+import { CONNECT_COMMAND_PREFIX, links } from '../config/site'
+import { useTranslations } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+
+// Each word of the command stays whole when the line wraps: a break inside a flag or a URL misleads
+const prefixWords = CONNECT_COMMAND_PREFIX.split(' ')
+---
+
+<section class="section how" id="how" aria-labelledby="how-title">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">{t('how.eyebrow')}</p>
+      <h2 class="section-title" id="how-title">{t('how.title')}</h2>
+    </div>
+
+    <ol class="steps">
+      <li class="step" data-reveal>
+        <span class="step-num" aria-hidden="true">1</span>
+        <h3 class="step-title">{t('how.s1.title')}</h3>
+        <p class="step-text"><Lines text={t('how.s1.text')} /></p>
+      </li>
+
+      <li class="step step--wide" data-reveal style="--reveal-i: 1">
+        <span class="step-num" aria-hidden="true">2</span>
+        <h3 class="step-title">{t('how.s2.title')}</h3>
+        <p class="step-text"><Lines text={t('how.s2.text')} /></p>
+
+        <div class="connect" data-connect>
+          <div class="picker" role="group" aria-label={t('how.s2.pick')}>
+            <span class="picker-label" aria-hidden="true">{t('how.s2.pick')}</span>
+            {
+              connectableAgents.map((agent) => (
+                <button
+                  type="button"
+                  class="chip"
+                  data-agent-id={agent.id}
+                  aria-pressed={agent.id === DEFAULT_CONNECT_AGENT ? 'true' : 'false'}
+                >
+                  {agent.name}
+                </button>
+              ))
+            }
+          </div>
+          <div class="terminal">
+            <code class="command"
+              ><span class="prompt" aria-hidden="true">$ </span><span data-connect-command
+                >{prefixWords.map((word) => <><span class="word">{word}</span>{' '}</>)}<span
+                  class="word"
+                  data-connect-agent>{DEFAULT_CONNECT_AGENT}</span
+                ></span
+              ></code
+            >
+            <button
+              type="button"
+              class="copy"
+              data-connect-copy
+              data-copy={t('how.copy')}
+              data-copied={t('how.copied')}
+              aria-live="polite">{t('how.copy')}</button
+            >
+          </div>
+          <p class="connect-note"><Lines text={t('how.s2.note')} /></p>
+          <a class="download" href={links.download}>{t('how.s2.download')}</a>
+        </div>
+      </li>
+
+      <li class="step" data-reveal style="--reveal-i: 2">
+        <span class="step-num" aria-hidden="true">3</span>
+        <h3 class="step-title">{t('how.s3.title')}</h3>
+        <p class="step-text"><Lines text={t('how.s3.text')} /></p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<style>
+  .steps {
+    display: grid;
+    gap: 16px;
+    counter-reset: none;
+  }
+
+  @media (min-width: 1024px) {
+    .steps {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr) minmax(0, 1fr);
+      align-items: stretch;
+    }
+  }
+
+  .step {
+    position: relative;
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    min-width: 0;
+    padding: 28px 24px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+  }
+
+  .step--wide {
+    border-color: rgb(124 157 255 / 0.3);
+    background: linear-gradient(180deg, rgb(46 91 228 / 0.1), transparent 60%), var(--surface);
+  }
+
+  .step-num {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--brand);
+    color: #fff;
+    font-family: var(--font-accent);
+    font-weight: 700;
+  }
+
+  .step-title {
+    font-size: 24px;
+  }
+
+  .step-text {
+    display: grid;
+    gap: 4px;
+    color: var(--fg-muted);
+    font-size: 16px;
+  }
+
+  .connect {
+    display: grid;
+    gap: 12px;
+    margin-top: 8px;
+    min-width: 0;
+  }
+
+  .picker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .picker-label {
+    margin-right: 4px;
+    color: var(--fg-faint);
+    font-family: var(--font-accent);
+    font-size: 12px;
+  }
+
+  .chip {
+    min-height: 32px;
+    padding: 4px 11px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--fg-muted);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition:
+      background-color 0.2s,
+      border-color 0.2s,
+      color 0.2s;
+  }
+
+  .chip:hover {
+    border-color: rgb(255 255 255 / 0.3);
+    color: var(--fg);
+  }
+
+  .chip[aria-pressed='true'] {
+    border-color: var(--brand);
+    background: var(--brand-soft);
+    color: var(--fg);
+  }
+
+  .terminal {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 14px 14px 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    background: #050507;
+  }
+
+  .command {
+    flex: 1;
+    min-width: 0;
+    color: var(--fg);
+    font-family: var(--font-accent);
+    font-size: 13.5px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+
+  @media (max-width: 520px) {
+    .terminal {
+      flex-direction: column-reverse;
+    }
+
+    .copy {
+      align-self: flex-end;
+    }
+  }
+
+  .word {
+    white-space: nowrap;
+  }
+
+  .prompt {
+    color: var(--brand-bright);
+  }
+
+  .copy {
+    flex: none;
+    min-height: 32px;
+    padding: 4px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--surface-2);
+    color: var(--fg-soft);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .copy:hover {
+    border-color: var(--brand);
+    color: var(--fg);
+  }
+
+  .connect-note {
+    display: grid;
+    gap: 2px;
+    color: var(--fg-faint);
+    font-size: 14px;
+  }
+
+  .download {
+    justify-self: start;
+    font-weight: 600;
+  }
+
+  .download::after {
+    content: ' →';
+  }
+</style>

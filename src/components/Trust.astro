@@ -1,0 +1,111 @@
+---
+import Lines from './Lines.astro'
+import type { Lang } from '../config/languages'
+import { useTranslations, type Key } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+
+type Icon = 'history' | 'server' | 'plug' | 'key'
+
+const items: readonly { icon: Icon; title: Key; text: Key }[] = [
+  { icon: 'history', title: 'trust.history.title', text: 'trust.history.text' },
+  { icon: 'server', title: 'trust.infra.title', text: 'trust.infra.text' },
+  { icon: 'plug', title: 'trust.mcp.title', text: 'trust.mcp.text' },
+  { icon: 'key', title: 'trust.token.title', text: 'trust.token.text' },
+]
+
+// Stroke icons drawn on a 24-unit grid
+const icons: Record<Icon, string> = {
+  history: 'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 3',
+  server: 'M4 5h16v5H4zM4 14h16v5H4zM8 7.5h.01M8 16.5h.01',
+  plug: 'M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4',
+  key: 'M14.5 9.5a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM13.5 12.5 21 20M18 17l2-2M16 15l2-2',
+}
+---
+
+<section class="section trust" aria-labelledby="trust-title">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">{t('trust.eyebrow')}</p>
+      <h2 class="section-title" id="trust-title">{t('trust.title')}</h2>
+    </div>
+    <ul class="cards">
+      {
+        items.map((item, i) => (
+          <li class="card" data-reveal style={`--reveal-i: ${i}`}>
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d={icons[item.icon]} />
+            </svg>
+            <h3 class="card-title">{t(item.title)}</h3>
+            <p class="card-text">
+              <Lines text={t(item.text)} />
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .cards {
+    display: grid;
+    gap: 16px;
+  }
+
+  @media (min-width: 640px) {
+    .cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .cards {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .card {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    padding: 26px 22px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    transition: border-color 0.2s;
+  }
+
+  .card:hover {
+    border-color: rgb(124 157 255 / 0.35);
+  }
+
+  .icon {
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    border-radius: 12px;
+    background: var(--brand-soft);
+    fill: none;
+    stroke: var(--brand-bright);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .card-title {
+    font-size: 21px;
+  }
+
+  .card-text {
+    display: grid;
+    gap: 6px;
+    color: var(--fg-muted);
+    font-size: 15.5px;
+  }
+</style>

@@ -1,0 +1,106 @@
+---
+import { nextMarkId } from '../scripts/markIds'
+
+/**
+ * Brand mark: the M of Memory drawn as two machines flowing into one shared node
+ * Geometry is the cabinet favicon's; `animated` draws the strokes in and lets the node breathe
+ */
+interface Props {
+  size?: number
+  animated?: boolean
+  class?: string
+}
+
+const { size = 32, animated = false, class: className } = Astro.props
+// Several marks share a page: each needs its own mask id, and a counter keeps builds reproducible
+const maskId = `vm-node-gap-${nextMarkId()}`
+---
+
+<svg
+  class:list={['mark', { 'mark--animated': animated }, className]}
+  width={size}
+  height={size}
+  viewBox="0 0 32 32"
+  aria-hidden="true"
+  focusable="false"
+>
+  <defs>
+    <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32">
+      <rect width="32" height="32" fill="#fff"></rect>
+      <circle cx="16" cy="21" r="5.5" fill="#000"></circle>
+    </mask>
+  </defs>
+  <rect class="mark-tile" width="32" height="32" rx="7"></rect>
+  <g
+    fill="none"
+    stroke="#eff6ff"
+    stroke-width="4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    mask={`url(#${maskId})`}
+  >
+    <path class="mark-stroke mark-stroke--faded" d="M24 24V8l-8 10" stroke-opacity=".5" pathLength="100"></path>
+    <path class="mark-stroke" d="M8 24V8l8 10" pathLength="100"></path>
+  </g>
+  <circle class="mark-node" cx="16" cy="21" r="4.5" fill="#eff6ff"></circle>
+</svg>
+
+<style>
+  .mark {
+    flex: none;
+  }
+
+  .mark-tile {
+    fill: var(--brand-tile);
+  }
+
+  .mark-node {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .mark--animated .mark-stroke {
+      stroke-dasharray: 100;
+      animation: mark-draw 1.4s var(--ease-out) 0.2s both;
+    }
+
+    .mark--animated .mark-stroke--faded {
+      animation-delay: 0.45s;
+    }
+
+    .mark--animated .mark-node {
+      animation:
+        mark-node-in 0.6s var(--ease-out) 1.1s both,
+        mark-breathe 3.2s ease-in-out 1.8s infinite;
+    }
+  }
+
+  @keyframes mark-draw {
+    from {
+      stroke-dashoffset: 100;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes mark-node-in {
+    from {
+      transform: scale(0);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes mark-breathe {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.12);
+    }
+  }
+</style>

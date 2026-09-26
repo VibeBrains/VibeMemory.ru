@@ -1,0 +1,116 @@
+---
+import Lines from './Lines.astro'
+import type { Lang } from '../config/languages'
+import { useTranslations, type Key } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+
+const items: readonly { q: Key; a: Key }[] = [
+  { q: 'faq.agents.q', a: 'faq.agents.a' },
+  { q: 'faq.storage.q', a: 'faq.storage.a' },
+  { q: 'faq.builtin.q', a: 'faq.builtin.a' },
+  { q: 'faq.sessions.q', a: 'faq.sessions.a' },
+  { q: 'faq.parallel.q', a: 'faq.parallel.a' },
+  { q: 'faq.team.q', a: 'faq.team.a' },
+  { q: 'faq.payment.q', a: 'faq.payment.a' },
+]
+---
+
+<section class="section faq" id="faq" aria-labelledby="faq-title">
+  <div class="container faq-row">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">{t('faq.eyebrow')}</p>
+      <h2 class="section-title" id="faq-title">{t('faq.title')}</h2>
+    </div>
+    <div class="list">
+      {
+        items.map((item, i) => (
+          <details class="item" data-reveal style={`--reveal-i: ${i % 3}`} open={i === 0}>
+            <summary class="question">{t(item.q)}</summary>
+            <p class="answer">
+              <Lines text={t(item.a)} />
+            </p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq-row {
+    display: grid;
+    gap: 8px;
+  }
+
+  @media (min-width: 1000px) {
+    .faq-row {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: 64px;
+      align-items: start;
+    }
+  }
+
+  .list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .item {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+    transition: border-color 0.2s;
+  }
+
+  .item[open] {
+    border-color: rgb(124 157 255 / 0.3);
+  }
+
+  .question {
+    position: relative;
+    padding: 18px 52px 18px 20px;
+    color: var(--fg);
+    font-size: 17px;
+    font-weight: 600;
+    list-style: none;
+    cursor: pointer;
+    border-radius: 14px;
+  }
+
+  .question::-webkit-details-marker {
+    display: none;
+  }
+
+  .question::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 22px;
+    width: 10px;
+    height: 10px;
+    margin-top: -7px;
+    border-right: 2px solid var(--brand-bright);
+    border-bottom: 2px solid var(--brand-bright);
+    transform: rotate(45deg);
+    transition: transform 0.25s var(--ease-out);
+  }
+
+  .item[open] .question::after {
+    margin-top: -2px;
+    transform: rotate(-135deg);
+  }
+
+  .answer {
+    display: grid;
+    gap: 6px;
+    padding: 0 20px 20px;
+    color: var(--fg-muted);
+    font-size: 16px;
+  }
+</style>
