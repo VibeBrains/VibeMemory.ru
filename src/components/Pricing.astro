@@ -1,7 +1,7 @@
 ---
 import Lines from './Lines.astro'
 import type { Lang } from '../config/languages'
-import { plans, type SizeUnit } from '../config/pricing'
+import { plans, weightExample, type SizeUnit } from '../config/pricing'
 import { links } from '../config/site'
 import { useTranslations, type Key } from '../i18n'
 
@@ -13,13 +13,16 @@ const { lang } = Astro.props
 const { t } = useTranslations(lang)
 
 const sizeKeys: Record<SizeUnit, Key> = { mb: 'pricing.size.mb', gb: 'pricing.size.gb' }
+const number = new Intl.NumberFormat(lang)
+// the memory bar is drawn at its true share, with a floor so it stays visible at all
+const memoryShare = Math.max((weightExample.memoryMb / weightExample.sessionsMb) * 100, 0.6)
 ---
 
 <section class="section pricing" id="pricing" aria-labelledby="pricing-title">
   <div class="container">
     <div class="section-head section-head--center" data-reveal>
       <p class="eyebrow">{t('pricing.eyebrow')}</p>
-      <h2 class="section-title" id="pricing-title">{t('pricing.title')}</h2>
+      <h2 class="section-title" id="pricing-title"><Lines text={t('pricing.title')} /></h2>
       <p class="section-lead"><Lines text={t('pricing.lead')} /></p>
     </div>
 
@@ -42,6 +45,34 @@ const sizeKeys: Record<SizeUnit, Key> = { mb: 'pricing.size.mb', gb: 'pricing.si
       }
     </ul>
 
+    <div class="weight" data-reveal>
+      <h3 class="weight-title"><Lines text={t('weight.title')} /></h3>
+      <p class="weight-lead"><Lines text={t('weight.lead')} /></p>
+      <div class="weight-kinds">
+        <div class="weight-kind">
+          <p class="weight-name">{t('weight.memory.name')}</p>
+          <p>{t('weight.memory.what')}</p>
+          <p class="weight-state">{t('weight.memory.state')}</p>
+        </div>
+        <div class="weight-kind weight-kind--heavy">
+          <p class="weight-name">{t('weight.sessions.name')}</p>
+          <p>{t('weight.sessions.what')}</p>
+          <p class="weight-state">{t('weight.sessions.state')}</p>
+        </div>
+      </div>
+      <figure class="weight-bars" aria-label={t('weight.figure')}>
+        <figcaption>{t('weight.example')}</figcaption>
+        <div class="weight-row">
+          <span class="weight-bar weight-bar--memory" style={`width: ${memoryShare}%`}></span>
+          <span class="weight-size">{t('weight.memory.size', { value: number.format(weightExample.memoryMb) })}</span>
+        </div>
+        <div class="weight-row">
+          <span class="weight-bar weight-bar--sessions" style="width: 100%"></span>
+          <span class="weight-size">{t('weight.sessions.size', { value: number.format(weightExample.sessionsMb) })}</span>
+        </div>
+      </figure>
+      <p class="weight-note"><Lines text={t('weight.note')} /></p>
+    </div>
     <p class="pilot" data-reveal><Lines text={t('pricing.pilot')} /></p>
   </div>
 </section>
@@ -125,6 +156,102 @@ const sizeKeys: Record<SizeUnit, Key> = { mb: 'pricing.size.mb', gb: 'pricing.si
     color: var(--fg-faint);
     font-size: 12.5px;
     line-height: 1.5;
+  }
+
+  .weight {
+    display: grid;
+    gap: 16px;
+    max-width: 860px;
+    margin: 48px auto 0;
+    padding: 28px 24px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+  }
+
+  .weight-title {
+    font-family: var(--font-title);
+    font-size: 24px;
+    line-height: 1.2;
+  }
+
+  .weight-lead,
+  .weight-note {
+    display: grid;
+    gap: 2px;
+    color: var(--fg-muted);
+  }
+
+  .weight-kinds {
+    display: grid;
+    gap: 12px;
+  }
+
+  @media (min-width: 640px) {
+    .weight-kinds {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .weight-kind {
+    display: grid;
+    gap: 6px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--fg-soft);
+    font-size: 15px;
+  }
+
+  .weight-kind--heavy {
+    border-color: rgb(124 157 255 / 0.45);
+  }
+
+  .weight-name {
+    color: var(--fg);
+    font-weight: 600;
+  }
+
+  .weight-state {
+    color: var(--fg-faint);
+    font-size: 13px;
+  }
+
+  .weight-bars {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+  }
+
+  .weight-bars figcaption {
+    color: var(--fg-faint);
+    font-size: 13px;
+  }
+
+  .weight-row {
+    display: grid;
+    gap: 4px;
+  }
+
+  .weight-bar {
+    display: block;
+    height: 12px;
+    border-radius: 6px;
+  }
+
+  .weight-bar--memory {
+    min-width: 4px;
+    background: var(--brand-bright);
+  }
+
+  .weight-bar--sessions {
+    background: linear-gradient(90deg, #b9c9ff, var(--brand-bright));
+  }
+
+  .weight-size {
+    color: var(--fg-soft);
+    font-family: var(--font-accent);
+    font-size: 13px;
   }
 
   .pilot {

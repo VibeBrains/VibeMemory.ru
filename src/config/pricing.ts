@@ -17,3 +17,9 @@ export const plans: readonly Plan[] = [
   { id: 'mb500', size: 500, unit: 'mb', priceRub: 200 },
   { id: 'gb1', size: 1, unit: 'gb', priceRub: 350 },
 ]
+
+/**
+ * A measured project of the owner's store (26.09.2026): what its memory and its sessions weigh on the server, sessions
+ * as git keeps them — compressed. The page shows it so a team knows the price of the sessions switch before it flips it
+ */
+export const weightExample = { memoryMb: 0.9, sessionsMb: 300 } as const
