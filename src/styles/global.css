@@ -1,6 +1,7 @@
 /* Fonts are the cabinet's (Inter, IBM Plex Serif 700, Fira Code), served from the site itself: no font CDN */
 @import '@fontsource-variable/inter';
 @import '@fontsource/ibm-plex-serif/700.css';
+@import '@fontsource/anton/400.css';
 @import '@fontsource-variable/fira-code';
 
 /*
@@ -34,6 +35,7 @@
 
   --font-body: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-title: 'IBM Plex Serif', Georgia, serif;
+  --font-fused: 'Anton', Impact, 'Arial Narrow', sans-serif;
   --font-accent: 'Fira Code Variable', 'Fira Code', ui-monospace, 'SF Mono', Menlo, monospace;
 
   --radius: 10px;

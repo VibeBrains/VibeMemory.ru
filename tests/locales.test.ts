@@ -150,6 +150,30 @@ describe('sources', () => {
   })
 })
 
+/**
+ * A fused line splits its words with markup — one letter of each sits in a plate of its own — so its text nodes are
+ * fragments no catalog holds. Each `data-fused` element is put back as its whole text, which the catalog must hold
+ */
+const joinFused = (html: string): string => {
+  let out = html
+  for (let start = out.search(/<span[^>]*\sdata-fused[\s>=]/); start >= 0; start = out.search(/<span[^>]*\sdata-fused[\s>=]/)) {
+    const open = out.indexOf('>', start) + 1
+    let depth = 1
+    let at = open
+    while (depth > 0) {
+      const next = out.slice(at).search(/<\/?span[\s>]/)
+      if (next < 0) throw new Error('an unclosed data-fused element')
+      at += next
+      depth += out.startsWith('</', at) ? -1 : 1
+      at = out.indexOf('>', at) + 1
+    }
+    const inner = out.slice(open, at - '</span>'.length)
+    const text = collapse(decode(inner.replace(/<[^>]+>/g, '')))
+    out = `${out.slice(0, start)}<span>${text}</span>${out.slice(at)}`
+  }
+  return out
+}
+
 describe('built pages', () => {
   const built = existsSync(DIST)
 
@@ -179,7 +203,7 @@ describe('built pages', () => {
         /^\p{Lu}$/u.test(text) ||
         allowed.some((pattern) => pattern.test(text))
 
-      const body = html
+      const body = joinFused(html)
         .replace(/<script[\s\S]*?<\/script>/g, '')
         .replace(/<style[\s\S]*?<\/style>/g, '')
         .replace(/<!--[\s\S]*?-->/g, '')
