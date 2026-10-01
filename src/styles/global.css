@@ -2,6 +2,8 @@
 @import '@fontsource-variable/inter';
 @import '@fontsource/ibm-plex-serif/700.css';
 @import '@fontsource/anton/400.css';
+/* Anton has no Cyrillic: Russian letters of the dense line fall to Oswald, the closest heavy condensed face that has it */
+@import '@fontsource/oswald/700.css';
 @import '@fontsource-variable/fira-code';
 
 /*
@@ -35,7 +37,7 @@
 
   --font-body: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-title: 'IBM Plex Serif', Georgia, serif;
-  --font-fused: 'Anton', Impact, 'Arial Narrow', sans-serif;
+  --font-fused: 'Anton', 'Oswald', Impact, 'Arial Narrow', sans-serif;
   --font-accent: 'Fira Code Variable', 'Fira Code', ui-monospace, 'SF Mono', Menlo, monospace;
 
   --radius: 10px;
