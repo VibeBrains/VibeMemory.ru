@@ -95,6 +95,12 @@ const prefixWords = CONNECT_COMMAND_PREFIX.split(' ')
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr) minmax(0, 1fr);
       align-items: stretch;
     }
+
+    /* The steps share the grid's rows: numbers, titles and texts line up across the row, however a title wraps */
+    .step {
+      grid-row: span 4;
+      grid-template-rows: subgrid;
+    }
   }
 
   .step {
