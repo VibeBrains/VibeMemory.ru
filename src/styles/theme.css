@@ -1,0 +1,59 @@
+/* Fonts are the cabinet's (Inter, IBM Plex Serif 700, Fira Code), served from the site itself: no font CDN */
+@import '@fontsource-variable/inter';
+@import '@fontsource/ibm-plex-serif/700.css';
+@import '@fontsource/anton/400.css';
+/* Anton has no Cyrillic: Russian letters of the dense line fall to Oswald, the closest heavy condensed face that has it */
+@import '@fontsource/oswald/700.css';
+@import '@fontsource-variable/fira-code';
+
+/*
+ * Theme of vibememory.ru over the family kit (@vibebrains/site-kit/styles/base.css)
+ * Palette follows the cabinet's dark theme (zinc surfaces, brand blue #2e5be4)
+ * The landing is dark only: the product lives next to terminals and editors, and the glow effects need a dark field
+ */
+:root {
+  color-scheme: dark;
+
+  --bg: #09090b;
+  --bg-soft: #0f0f13;
+  --surface: #131317;
+  --surface-2: #18181b;
+  --surface-3: #232329;
+  --border: rgb(255 255 255 / 0.08);
+  --border-strong: rgb(255 255 255 / 0.16);
+
+  --fg: #f4f4f5;
+  --fg-soft: #d4d4d8;
+  --fg-muted: #a1a1aa;
+  --fg-faint: #71717a;
+
+  --brand: #2e5be4;
+  --brand-tile: #3c6cdc;
+  --brand-hover: #3d69f0;
+  --brand-bright: #7c9dff;
+  --brand-ink: #eff6ff;
+  --brand-glow: rgb(46 91 228 / 0.35);
+  --brand-soft: rgb(46 91 228 / 0.14);
+  --success: #4ade80;
+
+  --font-body: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-title: 'IBM Plex Serif', Georgia, serif;
+  --font-fused: 'Anton', 'Oswald', Impact, 'Arial Narrow', sans-serif;
+  --font-accent: 'Fira Code Variable', 'Fira Code', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --radius: 10px;
+  --radius-lg: 18px;
+  --container: 1160px;
+  --gutter: 20px;
+  --header-h: 64px;
+  --section-y: 112px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --gutter: 16px;
+    --section-y: 72px;
+  }
+}

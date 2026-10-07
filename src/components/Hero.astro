@@ -1,7 +1,8 @@
 ---
-import Lines from './Lines.astro'
+import Lines from '@vibebrains/site-kit/components/Lines.astro'
+import FusedLine from '@vibebrains/site-kit/components/FusedLine.astro'
 import Mark from './Mark.astro'
-import type { Lang } from '../config/languages'
+import type { Lang } from '@vibebrains/site-kit/languages'
 import { links } from '../config/site'
 import { useTranslations, type Key } from '../i18n'
 
@@ -11,21 +12,6 @@ interface Props {
 
 const { lang } = Astro.props
 const { t } = useTranslations(lang)
-
-// The letter a word turns inside out: the first of these it holds, widest counters first — a narrow letter in a plate
-// reads as a bar. A one-letter word keeps its letter: a whole word in a plate is a square, not a word
-const PLATE_LETTERS = 'АОДРВБСМAODRBCM'
-const plated = (word: string) => {
-  if (word.length < 2) {
-    return { before: word, letter: '', after: '' }
-  }
-  const upper = word.toLocaleUpperCase(lang)
-  const at = [...PLATE_LETTERS].map((letter) => upper.indexOf(letter)).find((index) => index >= 0) ?? -1
-  return at < 0
-    ? { before: word, letter: '', after: '' }
-    : { before: word.slice(0, at), letter: word[at], after: word.slice(at + 1) }
-}
-const accentWords = t('hero.titleAccent').split(' ').map(plated)
 
 // The agents line names the owner's own agents as links to their releases: the catalog string keeps the sentence, the
 // placeholders mark where each link stands
@@ -58,20 +44,7 @@ const records: readonly { text: Key; member: Key; agent: string }[] = [
       <p class="eyebrow" data-reveal>{t('hero.eyebrow')}</p>
       <h1 class="hero-title" data-reveal style="--reveal-i: 1">
         <span class="ln">{t('hero.title')}</span>
-        <span class="ln hero-accent fused" data-fused aria-label={t('hero.titleAccent')}>
-          {
-            accentWords.map((word, index) => (
-              <>
-                {index > 0 && ' '}
-                <span class="word" aria-hidden="true">
-                  {word.before}
-                  {word.letter && <span class="plate">{word.letter}</span>}
-                  {word.after}
-                </span>
-              </>
-            ))
-          }
-        </span>
+        <FusedLine text={t('hero.titleAccent')} lang={lang} />
       </h1>
       <p class="hero-lead" data-reveal style="--reveal-i: 2">
         <span class="ln" data-joined>
@@ -176,44 +149,10 @@ const records: readonly { text: Key; member: Key; agent: string }[] = [
   }
 
   .hero-title {
+    --fused-fill: linear-gradient(92deg, var(--brand-bright), #b9c9ff 60%, var(--brand-bright));
+    --fused-plate: linear-gradient(180deg, #b9c9ff, var(--brand-bright));
     font-size: clamp(36px, 5vw, 58px);
     line-height: 1.05;
-  }
-
-  .hero-accent {
-    background: linear-gradient(92deg, var(--brand-bright), #b9c9ff 60%, var(--brand-bright));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
-  /*
-   * The fused line: heavy condensed capitals set so tight they touch, and in each word one letter turned inside out —
-   * a plate of the line's paint with the letter cut out. One such line a page: a spice, not the dish
-   */
-  .fused {
-    display: block;
-    margin-top: 0.08em;
-    font-family: var(--font-fused);
-    font-weight: 400;
-    font-size: 1.22em;
-    line-height: 0.9;
-    letter-spacing: -0.045em;
-    text-transform: uppercase;
-  }
-
-  .fused .word {
-    white-space: nowrap;
-  }
-
-  .fused .plate {
-    display: inline-block;
-    margin: 0 0.01em;
-    padding: 0.06em 0.03em 0;
-    line-height: 0.86;
-    background: linear-gradient(180deg, #b9c9ff, var(--brand-bright));
-    color: var(--bg);
-    -webkit-text-fill-color: var(--bg);
   }
 
   .hero-lead {

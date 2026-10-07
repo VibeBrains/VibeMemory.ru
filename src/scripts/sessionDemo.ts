@@ -1,4 +1,4 @@
-import { motionAllowed } from './motion'
+import { motionAllowed } from '@vibebrains/site-kit/scripts/motion'
 
 /** Stage lengths of the session story, in milliseconds; stage 4 lasts as long as the typing takes */
 const STAGE_MS = {

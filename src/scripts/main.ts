@@ -1,9 +1,10 @@
-import { initReveal } from './reveal'
-import { initLangMemory } from './lang'
+import { initReveal } from '@vibebrains/site-kit/scripts/reveal'
+import { initLangMemory } from '@vibebrains/site-kit/scripts/langMemory'
+import { LANG_STORAGE_KEY } from '../config/site'
 import { initConnect } from './connect'
 import { initSessionDemo } from './sessionDemo'
 
 initReveal()
-initLangMemory()
+initLangMemory(LANG_STORAGE_KEY)
 initConnect()
 initSessionDemo()
