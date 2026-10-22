@@ -1,0 +1,195 @@
+---
+import Lines from '@vibebrains/site-kit/components/Lines.astro'
+import type { Lang } from '@vibebrains/site-kit/languages'
+import { LOCAL_UI_COMMAND } from '../config/site'
+import { useTranslations, type Key } from '../i18n'
+
+/** Possibilities for teams and departments: access, roles, roadmap, two paid modules and the machine's own page */
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+
+type Icon = 'folder' | 'roles' | 'roadmap' | 'desk' | 'matrix' | 'monitor'
+
+const items: readonly { icon: Icon; title: Key; text: Key; paid?: true; command?: true }[] = [
+  { icon: 'folder', title: 'teams.access.title', text: 'teams.access.text' },
+  { icon: 'roles', title: 'teams.roles.title', text: 'teams.roles.text' },
+  { icon: 'roadmap', title: 'teams.roadmap.title', text: 'teams.roadmap.text' },
+  { icon: 'desk', title: 'teams.desk.title', text: 'teams.desk.text', paid: true },
+  { icon: 'matrix', title: 'teams.process.title', text: 'teams.process.text', paid: true },
+  { icon: 'monitor', title: 'teams.local.title', text: 'teams.local.text', command: true },
+]
+
+// Stroke icons drawn on a 24-unit grid
+const icons: Record<Icon, string> = {
+  folder: 'M3 6h6l2 2h10v11H3zM9 14l2 2 4-4',
+  roles:
+    'M16 20v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M9.5 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM21 20v-1a4 4 0 0 0-3-3.9M16 4.1a3.5 3.5 0 0 1 0 6.8',
+  roadmap: 'M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2',
+  desk: 'M3 13l3-8h12l3 8v6H3zM3 13h5l1 3h6l1-3h5',
+  matrix: 'M3 3h18v18H3zM3 9h18M3 15h18M9 3v18M15 3v18',
+  monitor: 'M3 5h18v12H3zM8 21h8M12 17v4',
+}
+
+// A heading of two thoughts: set in two lines on a wide screen, one paragraph on a phone
+const titleParts = t('teams.title').split('\n')
+---
+
+<section class="section teams" id="teams" aria-labelledby="teams-title">
+  <div class="container">
+    <div class="section-head section-head--center" data-reveal>
+      <p class="eyebrow">{t('teams.eyebrow')}</p>
+      <h2 class="section-title" id="teams-title">
+        {titleParts.map((part, i) => <><span class:list={['seam', { 'seam--next': i > 0 }]}>{part}</span>{' '}</>)}
+      </h2>
+      <p class="section-lead"><Lines text={t('teams.lead')} /></p>
+    </div>
+    <ul class="cards">
+      {
+        items.map((item, i) => (
+          <li class="card" data-reveal style={`--reveal-i: ${i % 3}`}>
+            <div class="card-top">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d={icons[item.icon]} />
+              </svg>
+              {item.paid && <span class="badge">{t('teams.paid')}</span>}
+            </div>
+            <h3 class="card-title">{t(item.title)}</h3>
+            <div class="card-body">
+              {item.command && <code class="command">{LOCAL_UI_COMMAND}</code>}
+              <p class="card-text">
+                <Lines text={t(item.text)} />
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="note" data-reveal>{t('teams.note')}</p>
+  </div>
+</section>
+
+<style>
+  .seam {
+    display: inline;
+  }
+
+  @media (min-width: 768px) {
+    .seam {
+      display: block;
+    }
+
+    /* The catalog holds the second thought in lower case, so on a phone it continues the first */
+    .seam--next::first-letter {
+      text-transform: uppercase;
+    }
+  }
+
+  .cards {
+    display: grid;
+    gap: 16px;
+  }
+
+  @media (min-width: 640px) {
+    .cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* The cards of a row share its rows: icons, titles and texts line up, however a title wraps */
+    .card {
+      grid-row: span 3;
+      grid-template-rows: subgrid;
+    }
+  }
+
+  @media (min-width: 1040px) {
+    .cards {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .card {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    padding: 26px 22px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    transition: border-color 0.2s;
+  }
+
+  .card:hover {
+    border-color: rgb(124 157 255 / 0.35);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .icon {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    border-radius: 12px;
+    background: var(--brand-soft);
+    fill: none;
+    stroke: var(--brand-bright);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .badge {
+    padding: 4px 10px;
+    border: 1px solid rgb(124 157 255 / 0.4);
+    border-radius: 999px;
+    color: var(--brand-bright);
+    font-family: var(--font-accent);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .card-title {
+    font-size: 21px;
+  }
+
+  .card-body {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+  }
+
+  .command {
+    justify-self: start;
+    padding: 5px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--bg-soft);
+    color: var(--fg-soft);
+    font-family: var(--font-accent);
+    font-size: 14px;
+  }
+
+  .card-text {
+    display: grid;
+    gap: 6px;
+    color: var(--fg-muted);
+    font-size: 15.5px;
+  }
+
+  .note {
+    margin-top: 28px;
+    color: var(--fg-faint);
+    font-size: 15px;
+    text-align: center;
+  }
+</style>

@@ -16,5 +16,8 @@ export const links = {
 /** The command the cabinet prints for connecting an agent, without the agent id that ends it */
 export const CONNECT_COMMAND_PREFIX = `vibememory connect --cabinet ${CABINET_URL} --agent`
 
+/** The command that opens the page of the machine's own projects and memory map */
+export const LOCAL_UI_COMMAND = 'vibememory ui'
+
 /** localStorage key that remembers the language the visitor picked explicitly */
 export const LANG_STORAGE_KEY = 'vibememory.lang'
