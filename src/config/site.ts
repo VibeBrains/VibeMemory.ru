@@ -24,7 +24,7 @@ export const LOCAL_UI_COMMAND = 'vibememory ui'
  * Goals are listed in docs/manuals/metrikaGoals.md
  */
 export const metrika = {
-  counterId: '' as string,
+  counterId: '113749456' as string,
   /** First-party cookie with the visitor's decision, one year */
   cookie: 'vibememory_cookies',
 } as const
