@@ -20,12 +20,13 @@ const { t } = useTranslations(lang)
   tagline={t('footer.tagline')}
   navLabel={t('footer.nav')}
   links={[
-    { href: links.download, label: t('footer.download') },
-    { href: links.signIn, label: t('footer.signIn') },
+    { href: links.download, label: t('footer.download'), goal: 'download_click' },
+    { href: links.signIn, label: t('footer.signIn'), goal: 'signin_click' },
     { href: links.terms, label: t('footer.terms') },
     { href: links.policy, label: t('footer.policy') },
   ]}
   copyright={t('footer.copyright', { year: new Date().getFullYear() })}
+  cookieSettings={t('footer.cookies')}
   langLabel={t('lang.label')}
   langNames={{
     ru: { code: t('lang.ru.code'), name: t('lang.ru.name') },

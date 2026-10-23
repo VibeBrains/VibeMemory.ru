@@ -19,5 +19,15 @@ export const CONNECT_COMMAND_PREFIX = `vibememory connect --cabinet ${CABINET_UR
 /** The command that opens the page of the machine's own projects and memory map */
 export const LOCAL_UI_COMMAND = 'vibememory ui'
 
+/**
+ * Yandex Metrika: the counter number; empty means the site loads nothing and shows no cookie banner
+ * Goals are listed in docs/manuals/metrikaGoals.md
+ */
+export const metrika = {
+  counterId: '' as string,
+  /** First-party cookie with the visitor's decision, one year */
+  cookie: 'vibememory_cookies',
+} as const
+
 /** localStorage key that remembers the language the visitor picked explicitly */
 export const LANG_STORAGE_KEY = 'vibememory.lang'

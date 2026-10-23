@@ -30,8 +30,8 @@ const { t } = useTranslations(lang)
     en: { code: t('lang.en.code'), name: t('lang.en.name') },
   }}
   actions={[
-    { kind: 'ghost', href: links.signIn, label: t('header.signIn') },
-    { kind: 'primary', href: links.start, label: t('header.start') },
+    { kind: 'ghost', href: links.signIn, label: t('header.signIn'), goal: 'signin_click' },
+    { kind: 'primary', href: links.start, label: t('header.start'), goal: 'start_click' },
   ]}
 >
   <Mark slot="logo" size={30} />

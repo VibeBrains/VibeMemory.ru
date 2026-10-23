@@ -2,7 +2,8 @@
 import KitBase from '@vibebrains/site-kit/components/Base.astro'
 import '../styles/theme.css'
 import type { Lang } from '@vibebrains/site-kit/languages'
-import { LANG_STORAGE_KEY } from '../config/site'
+import Metrika from '@vibebrains/site-kit/components/Metrika.astro'
+import { LANG_STORAGE_KEY, links, metrika } from '../config/site'
 import { useTranslations } from '../i18n'
 
 interface Props {
@@ -23,6 +24,18 @@ const { t } = useTranslations(lang)
   faviconSvg="/favicon.svg"
 >
   <slot />
+  <Metrika
+    counterId={metrika.counterId}
+    cookie={metrika.cookie}
+    policyHref={links.policy}
+    texts={{
+      title: t('cookie.title'),
+      body: t('cookie.body'),
+      policy: t('cookie.policy'),
+      accept: t('cookie.accept'),
+      essential: t('cookie.essential'),
+    }}
+  />
   <script>
     import '../scripts/main'
   </script>

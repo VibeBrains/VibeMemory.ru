@@ -167,5 +167,11 @@
   "footer.signIn": "Войти",
   "footer.terms": "Условия",
   "footer.policy": "Конфиденциальность",
-  "footer.copyright": "© {year} VibeMemory"
+  "footer.copyright": "© {year} VibeMemory",
+  "cookie.title": "Cookie и аналитика",
+  "cookie.body": "Нужные для работы cookie включены всегда\nЯндекс Метрику с записью экрана включаем только с вашего согласия\nВвод в записи скрыт",
+  "cookie.policy": "Что собирается и как отказаться",
+  "cookie.accept": "Согласен",
+  "cookie.essential": "Только необходимые",
+  "footer.cookies": "Настройки cookie"
 }

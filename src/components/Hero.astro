@@ -51,7 +51,7 @@ const records: readonly { text: Key; member: Key; agent: string }[] = [
           {
             agentsLine.map((part) =>
               part.link ? (
-                <a href={part.link.href} rel="noopener">
+                <a href={part.link.href} rel="noopener" data-goal="agent_release_open">
                   {part.link.name}
                 </a>
               ) : (
@@ -63,8 +63,8 @@ const records: readonly { text: Key; member: Key; agent: string }[] = [
         <Lines text={t('hero.lead')} />
       </p>
       <div class="hero-cta" data-reveal style="--reveal-i: 3">
-        <a class="btn btn--primary btn--lg" href={links.start}>{t('hero.primary')}</a>
-        <a class="btn btn--ghost btn--lg" href={links.signIn}>{t('hero.secondary')}</a>
+        <a class="btn btn--primary btn--lg" href={links.start} data-goal="start_click">{t('hero.primary')}</a>
+        <a class="btn btn--ghost btn--lg" href={links.signIn} data-goal="signin_click">{t('hero.secondary')}</a>
       </div>
       <p class="hero-note" data-reveal style="--reveal-i: 4">
         {t('hero.note').split('\n').map((line) => <span>{line}</span>)}

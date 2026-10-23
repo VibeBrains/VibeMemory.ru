@@ -49,7 +49,7 @@ const memoryShare = Math.max((weightExample.memoryMb / weightExample.sessionsMb)
                   )
                 }
               </p>
-              <a class:list={['btn', free ? 'btn--primary' : 'btn--ghost']} href={links.start}>
+              <a class:list={['btn', free ? 'btn--primary' : 'btn--ghost']} href={links.start} data-goal={free ? 'start_free' : 'start_paid'}>
                 {free ? t('pricing.cta.free') : t('pricing.cta.paid')}
               </a>
             </li>

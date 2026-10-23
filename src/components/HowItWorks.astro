@@ -64,13 +64,14 @@ const prefixWords = CONNECT_COMMAND_PREFIX.split(' ')
               type="button"
               class="copy"
               data-connect-copy
+              data-goal="command_copy"
               data-copy={t('how.copy')}
               data-copied={t('how.copied')}
               aria-live="polite">{t('how.copy')}</button
             >
           </div>
           <p class="connect-note"><Lines text={t('how.s2.note')} /></p>
-          <a class="download" href={links.download}>{t('how.s2.download')}</a>
+          <a class="download" href={links.download} data-goal="download_click">{t('how.s2.download')}</a>
         </div>
       </li>
 

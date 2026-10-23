@@ -167,5 +167,11 @@
   "footer.signIn": "Sign in",
   "footer.terms": "Terms",
   "footer.policy": "Privacy",
-  "footer.copyright": "© {year} VibeMemory"
+  "footer.copyright": "© {year} VibeMemory",
+  "cookie.title": "Cookies and analytics",
+  "cookie.body": "Cookies the site needs are always on\nYandex Metrika with screen recording is on only with your consent\nTyped input is hidden in recordings",
+  "cookie.policy": "What is collected and how to opt out",
+  "cookie.accept": "Agree",
+  "cookie.essential": "Necessary only",
+  "footer.cookies": "Cookie settings"
 }

@@ -21,8 +21,8 @@ const { t } = useTranslations(lang)
       <h2 class="section-title" id="cta-title">{t('cta.title')}</h2>
       <p class="section-lead"><Lines text={t('cta.text')} /></p>
       <div class="actions">
-        <a class="btn btn--primary btn--lg" href={links.start}>{t('cta.primary')}</a>
-        <a class="btn btn--ghost btn--lg" href={links.signIn}>{t('cta.secondary')}</a>
+        <a class="btn btn--primary btn--lg" href={links.start} data-goal="start_click">{t('cta.primary')}</a>
+        <a class="btn btn--ghost btn--lg" href={links.signIn} data-goal="signin_click">{t('cta.secondary')}</a>
       </div>
     </div>
   </div>
