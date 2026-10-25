@@ -20,7 +20,7 @@ import {
 const ROOT = join(import.meta.dir, '..')
 const DIST = join(ROOT, 'dist')
 
-const EXPECTED_IDS = ['0.13.3', '0.13.2', '0.13.1']
+const EXPECTED_IDS = ['0.13.4', '0.13.3', '0.13.2', '0.13.1']
 const LANGS: readonly Lang[] = ['ru', 'en']
 
 const readDist = (path: string): string => readFileSync(join(DIST, path), 'utf8')
@@ -150,10 +150,11 @@ describe('pages', () => {
 
 describe('landing', () => {
   test('exactly the three latest records link to their pages', () => {
+    const latest = EXPECTED_IDS.slice(0, 3)
     for (const lang of LANGS) {
       const html = readDist(distFile(lang === 'en' ? '/en/' : '/'))
       const links = [...html.matchAll(/href="(\/(?:en\/)?changelog\/([^"/]+))\//g)].map((match) => match[2])
-      expect(links).toEqual(EXPECTED_IDS)
+      expect(links).toEqual(latest)
     }
   })
 
