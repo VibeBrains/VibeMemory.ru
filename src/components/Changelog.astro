@@ -1,0 +1,146 @@
+---
+import Lines from '@vibebrains/site-kit/components/Lines.astro'
+import type { Lang } from '@vibebrains/site-kit/languages'
+import { changelogArchivePath, changelogKeys, changelogRecords, recordPath } from '../changelog/records'
+import { useTranslations } from '../i18n'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const { t } = useTranslations(lang)
+
+// The landing shows the three latest records; the archive linked below holds them all
+const latest = changelogRecords.slice(0, 3)
+---
+
+<section class="section changelog" id="changelog" aria-labelledby="changelog-title">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">{t('changelog.eyebrow')}</p>
+      <h2 class="section-title" id="changelog-title">{t('changelog.title')}</h2>
+    </div>
+    <ul class="cards">
+      {
+        latest.map((record, i) => (
+          <li class="card" data-reveal style={`--reveal-i: ${i}`}>
+            <a class="card-link" href={recordPath(lang, record.id)} data-goal="changelog_click">
+              <span class="card-meta">
+                <span class="card-version">{record.id}</span>
+                <time datetime={record.date}>{record.date}</time>
+              </span>
+              <h3 class="card-title">{t(changelogKeys[record.id].title)}</h3>
+              <p class="card-text">
+                <Lines text={t(changelogKeys[record.id].summary)} />
+              </p>
+              <span class="card-more" aria-hidden="true" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="more" data-reveal>
+      <a class="btn btn--ghost" href={changelogArchivePath(lang)} data-goal="changelog_more_click">
+        {t('changelog.more')}
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cards {
+    display: grid;
+    gap: 16px;
+  }
+
+  @media (min-width: 900px) {
+    .cards {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    /* The cards of a row share its rows: versions, titles and texts line up, however a title wraps */
+    .card {
+      grid-row: span 4;
+      grid-template-rows: subgrid;
+    }
+  }
+
+  .card {
+    display: grid;
+    align-content: start;
+  }
+
+  .card-link {
+    display: grid;
+    gap: 12px;
+    height: 100%;
+    padding: 24px 22px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    transition:
+      border-color 0.2s,
+      transform 0.2s var(--ease-out);
+  }
+
+  .card-link:hover {
+    border-color: rgb(124 157 255 / 0.35);
+    transform: translateY(-2px);
+  }
+
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 12px;
+    font-family: var(--font-accent);
+    font-size: 14px;
+  }
+
+  .card-version {
+    color: var(--brand-bright);
+  }
+
+  .card-meta time {
+    color: var(--fg-faint);
+  }
+
+  .card-title {
+    font-size: 21px;
+  }
+
+  .card-text {
+    display: grid;
+    gap: 6px;
+    color: var(--fg-muted);
+    font-size: 15.5px;
+  }
+
+  /* A chevron drawn in CSS: the whole card is one link, so it needs no caption text */
+  .card-more {
+    align-self: end;
+    width: 12px;
+    height: 12px;
+    margin-top: 4px;
+    border-right: 2px solid var(--brand-bright);
+    border-bottom: 2px solid var(--brand-bright);
+    transform: rotate(-45deg);
+    opacity: 0.7;
+    transition:
+      transform 0.2s var(--ease-out),
+      opacity 0.2s;
+  }
+
+  .card-link:hover .card-more,
+  .card-link:focus-visible .card-more {
+    transform: rotate(-45deg) translate(3px, 3px);
+    opacity: 1;
+  }
+
+  .more {
+    display: flex;
+    justify-content: center;
+    margin-top: 28px;
+  }
+</style>

@@ -1,0 +1,110 @@
+---
+import Lines from '@vibebrains/site-kit/components/Lines.astro'
+import ChangelogLayout from '../../../layouts/Changelog.astro'
+import { changelogArchivePath, changelogKeys, changelogRecords, recordPath } from '../../../changelog/records'
+import { useTranslations } from '../../../i18n'
+
+const lang = 'en'
+const { t } = useTranslations(lang)
+---
+
+<ChangelogLayout
+  lang={lang}
+  title={t('changelog.meta.title')}
+  description={t('changelog.meta.description')}
+  ruPath={changelogArchivePath('ru')}
+  enPath={changelogArchivePath('en')}
+>
+  <main id="main">
+    <section class="section" aria-labelledby="changelog-title">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">{t('changelog.eyebrow')}</p>
+          <h1 class="section-title" id="changelog-title">{t('changelog.title')}</h1>
+          <p class="section-lead"><Lines text={t('changelog.lead')} /></p>
+        </div>
+        <ul class="records">
+          {
+            changelogRecords.map((record, i) => (
+              <li class="record" data-reveal style={`--reveal-i: ${i % 3}`}>
+                <a class="record-link" href={recordPath(lang, record.id)}>
+                  <span class="record-meta">
+                    <span class="record-version">{record.id}</span>
+                    <time datetime={record.date}>{record.date}</time>
+                  </span>
+                  <h2 class="record-title">{t(changelogKeys[record.id].title)}</h2>
+                  <p class="record-text">
+                    <Lines text={t(changelogKeys[record.id].summary)} />
+                  </p>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="home" data-reveal>
+          <a class="btn btn--ghost" href="/en/">{t('changelog.home')}</a>
+        </p>
+      </div>
+    </section>
+  </main>
+</ChangelogLayout>
+
+<style>
+  .records {
+    display: grid;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .record-link {
+    display: grid;
+    gap: 12px;
+    height: 100%;
+    padding: 26px 22px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    transition:
+      border-color 0.2s,
+      transform 0.2s var(--ease-out);
+  }
+
+  .record-link:hover {
+    border-color: rgb(124 157 255 / 0.35);
+    transform: translateY(-2px);
+  }
+
+  .record-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 12px;
+    font-family: var(--font-accent);
+    font-size: 14px;
+  }
+
+  .record-version {
+    color: var(--brand-bright);
+  }
+
+  .record-meta time {
+    color: var(--fg-faint);
+  }
+
+  .record-title {
+    font-size: 22px;
+  }
+
+  .record-text {
+    display: grid;
+    gap: 6px;
+    color: var(--fg-muted);
+    font-size: 16px;
+  }
+
+  .home {
+    display: flex;
+    justify-content: center;
+    margin-top: 32px;
+  }
+</style>
