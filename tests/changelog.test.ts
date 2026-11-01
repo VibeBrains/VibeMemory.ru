@@ -20,7 +20,7 @@ import {
 const ROOT = join(import.meta.dir, '..')
 const DIST = join(ROOT, 'dist')
 
-const EXPECTED_IDS = ['0.14.1', '0.14.0', '0.13.5', '0.13.4', '0.13.3', '0.13.2', '0.13.1']
+const EXPECTED_IDS = ['0.14.2', '0.14.1', '0.14.0', '0.13.5', '0.13.4', '0.13.3', '0.13.2', '0.13.1']
 const LANGS: readonly Lang[] = ['ru', 'en']
 
 const readDist = (path: string): string => readFileSync(join(DIST, path), 'utf8')
