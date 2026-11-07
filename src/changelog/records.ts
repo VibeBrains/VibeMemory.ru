@@ -18,6 +18,8 @@ interface RecordKeys {
 
 /** Catalog keys of every public record, keyed by the release version */
 export const changelogKeys: Record<string, RecordKeys> = {
+  '0.15.1': { title: 'changelog.0.15.1.title', summary: 'changelog.0.15.1.summary', details: 'changelog.0.15.1.details' },
+  '0.15.0': { title: 'changelog.0.15.0.title', summary: 'changelog.0.15.0.summary', details: 'changelog.0.15.0.details' },
   '0.14.3': { title: 'changelog.0.14.3.title', summary: 'changelog.0.14.3.summary', details: 'changelog.0.14.3.details' },
   '0.14.2': { title: 'changelog.0.14.2.title', summary: 'changelog.0.14.2.summary', details: 'changelog.0.14.2.details' },
   '0.14.1': { title: 'changelog.0.14.1.title', summary: 'changelog.0.14.1.summary', details: 'changelog.0.14.1.details' },
@@ -31,6 +33,8 @@ export const changelogKeys: Record<string, RecordKeys> = {
 
 /** Public records with their release days, newest first */
 const ORDER: readonly { id: string; date: string }[] = [
+  { id: '0.15.1', date: '2026-11-04' },
+  { id: '0.15.0', date: '2026-11-04' },
   { id: '0.14.3', date: '2026-11-03' },
   { id: '0.14.2', date: '2026-11-01' },
   { id: '0.14.1', date: '2026-10-30' },
