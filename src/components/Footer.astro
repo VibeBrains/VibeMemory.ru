@@ -26,6 +26,7 @@ const { t } = useTranslations(lang)
     { href: links.policy, label: t('footer.policy') },
   ]}
   copyright={t('footer.copyright', { year: new Date().getFullYear() })}
+  madeBy={{ label: t('footer.madeBy'), site: t('footer.madeBySite'), href: links.author }}
   cookieSettings={t('footer.cookies')}
   langLabel={t('lang.label')}
   langNames={{

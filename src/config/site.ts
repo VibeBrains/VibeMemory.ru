@@ -3,6 +3,7 @@ export const CABINET_URL = 'https://app.vibememory.ru'
 
 /** Outbound links of the landing, one source for header, sections and footer */
 export const links = {
+  author: 'https://borodatych.ru',
   start: `${CABINET_URL}/start`,
   signIn: `${CABINET_URL}/sign-in`,
   download: `${CABINET_URL}/download`,

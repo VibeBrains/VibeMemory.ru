@@ -215,6 +215,8 @@
   "footer.terms": "Terms",
   "footer.policy": "Privacy",
   "footer.copyright": "© {year} VibeMemory",
+  "footer.madeBy": "Made at",
+  "footer.madeBySite": "borodatych.ru",
   "cookie.title": "Cookies and analytics",
   "cookie.body": "Cookies the site needs are always on\nYandex Metrika with screen recording is on only with your consent\nTyped input is hidden in recordings",
   "cookie.policy": "What is collected and how to opt out",

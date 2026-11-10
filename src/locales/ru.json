@@ -215,6 +215,8 @@
   "footer.terms": "Условия",
   "footer.policy": "Конфиденциальность",
   "footer.copyright": "© {year} VibeMemory",
+  "footer.madeBy": "Сделано в",
+  "footer.madeBySite": "borodatych.ru",
   "cookie.title": "Cookie и аналитика",
   "cookie.body": "Нужные для работы cookie включены всегда\nЯндекс Метрику с записью экрана включаем только с вашего согласия\nВвод в записи скрыт",
   "cookie.policy": "Что собирается и как отказаться",
