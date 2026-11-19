@@ -2,7 +2,7 @@
 import KitFooter from '@vibebrains/site-kit/components/Footer.astro'
 import Mark from './Mark.astro'
 import type { Lang } from '@vibebrains/site-kit/languages'
-import { links } from '../config/site'
+import { links, seller } from '../config/site'
 import { useTranslations } from '../i18n'
 
 interface Props {
@@ -24,6 +24,7 @@ const { t } = useTranslations(lang)
     { href: links.signIn, label: t('footer.signIn'), goal: 'signin_click' },
     { href: links.terms, label: t('footer.terms') },
     { href: links.policy, label: t('footer.policy') },
+    { href: links.payment, label: t('footer.payment') },
   ]}
   copyright={t('footer.copyright', { year: new Date().getFullYear() })}
   madeBy={{ label: t('footer.madeBy'), site: t('footer.madeBySite'), href: links.author }}
@@ -36,3 +37,58 @@ const { t } = useTranslations(lang)
 >
   <Mark slot="logo" size={28} />
 </KitFooter>
+
+{/* У футера из кита нет слота для продавца, а банк, подключающий эквайринг, ищет реквизиты здесь */}
+<div class="seller">
+  <div class="container seller-row">
+    <span class="seller-name">{seller.name}</span>
+    <span class="seller-requisite">
+      <span class="seller-label">{t('footer.seller.inn')}</span> {seller.inn}
+    </span>
+    <span class="seller-requisite">
+      <span class="seller-label">{t('footer.seller.ogrnip')}</span> {seller.ogrnip}
+    </span>
+    <a href={`mailto:${seller.email}`}>{seller.email}</a>
+    <a href={seller.phoneHref}>{seller.phone}</a>
+  </div>
+</div>
+
+<style>
+  .seller {
+    border-top: 1px solid var(--border);
+    background: var(--bg-soft);
+    color: var(--fg-faint);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .seller-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 18px;
+    /* Длинное наименование или почта должны переноситься внутри строки, а не растягивать страницу на телефоне */
+    min-width: 0;
+    padding-block: 16px 24px;
+  }
+
+  .seller-row > * {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .seller-label {
+    color: var(--fg-faint);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .seller a {
+    color: var(--fg-muted);
+    text-decoration: underline;
+  }
+
+  .seller a:hover {
+    color: var(--fg);
+  }
+</style>

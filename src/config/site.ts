@@ -9,9 +9,27 @@ export const links = {
   download: `${CABINET_URL}/download`,
   terms: `${CABINET_URL}/terms`,
   policy: `${CABINET_URL}/policy`,
+  payment: `${CABINET_URL}/payment`,
   // the owner's own agents that speak the memory natively: their releases, where a visitor gets them
   vibeideReleases: 'https://github.com/VibeBrains/VibeIDE/releases',
   vibeideaReleases: 'https://github.com/VibeBrains/VibeIDEA/releases',
+} as const
+
+/** Телефон продавца в том виде, в каком его читает человек: ссылка строится из тех же цифр */
+const SELLER_PHONE = '+7 953 109-06-07'
+
+/**
+ * Реквизиты продавца: банк, который подключает эквайринг, проверяет их в подвале лендинга
+ * Наименование одинаково во всех локалях, поэтому живёт здесь, а не в каталогах
+ */
+export const seller = {
+  name: 'ИП Трошков Роман Алексеевич',
+  inn: '663303806953',
+  ogrnip: '326237500527283',
+  email: 'support@vibememory.ru',
+  phone: SELLER_PHONE,
+  /** `tel:` принимает только цифры и плюс, поэтому пробелы и дефисы из показанного номера убираются */
+  phoneHref: `tel:${SELLER_PHONE.replace(/[^\d+]/g, '')}`,
 } as const
 
 /** The command the cabinet prints for connecting an agent, without the agent id that ends it */
