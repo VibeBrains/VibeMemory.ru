@@ -1,8 +1,8 @@
 ---
 import Lines from '@vibebrains/site-kit/components/Lines.astro'
 import type { Lang } from '@vibebrains/site-kit/languages'
-import { plans, weightExample, type SizeUnit } from '../config/pricing'
-import { links } from '../config/site'
+import { localLicense, plans, weightExample, type SizeUnit } from '../config/pricing'
+import { links, seller } from '../config/site'
 import { useTranslations, type Key } from '../i18n'
 
 interface Props {
@@ -16,6 +16,8 @@ const sizeKeys: Record<SizeUnit, Key> = { mb: 'pricing.size.mb', gb: 'pricing.si
 const number = new Intl.NumberFormat(lang)
 // the memory bar is drawn at its true share, with a floor so it stays visible at all
 const memoryShare = Math.max((weightExample.memoryMb / weightExample.sessionsMb) * 100, 0.6)
+// Адрес и тема заявки на локальную версию: почта из реквизитов продавца, тема — из каталога и с экранированием для ссылки
+const localMailto = `mailto:${seller.email}?subject=${encodeURIComponent(t('pricing.local.subject'))}`
 ---
 
 <section class="section pricing" id="pricing" aria-labelledby="pricing-title">
@@ -31,7 +33,12 @@ const memoryShare = Math.max((weightExample.memoryMb / weightExample.sessionsMb)
         plans.map((plan, i) => {
           const free = plan.priceRub === 0
           return (
-            <li class:list={['plan', { 'plan--free': free }]} data-reveal style={`--reveal-i: ${i}`}>
+            <li class:list={['plan', { 'plan--free': free, 'plan--best': plan.best === true }]} data-reveal style={`--reveal-i: ${i}`}>
+              {
+                plan.best === true && (
+                  <span class="plan-best">{t('pricing.best')}</span>
+                )
+              }
               <p class="plan-size">{t(sizeKeys[plan.unit], { value: plan.size })}</p>
               <p class="plan-price">{free ? t('pricing.free') : t('pricing.price', { amount: plan.priceRub })}</p>
               <p class="plan-period">
@@ -57,6 +64,20 @@ const memoryShare = Math.max((weightExample.memoryMb / weightExample.sessionsMb)
         })
       }
     </ul>
+
+    <p class="pilot" data-reveal><Lines text={t('pricing.pilot')} /></p>
+
+    <section class="local" id="local" aria-labelledby="local-title" data-reveal>
+      <div class="local-head">
+        <h3 class="local-title" id="local-title"><Lines text={t('pricing.local.title')} /></h3>
+        <p class="local-price">
+          <span class="local-amount">{t('pricing.local.price', { amount: number.format(localLicense.priceRub) })}</span>
+          <span class="local-once">{t('pricing.local.once')}</span>
+        </p>
+      </div>
+      <div class="local-rows"><Lines text={t('pricing.local.rows', { months: localLicense.updatesMonths, devices: localLicense.devices })} /></div>
+      <a class="btn btn--primary local-cta" href={localMailto} data-goal="local_request">{t('pricing.local.cta')}</a>
+    </section>
 
     <div class="weight" data-reveal>
       <h3 class="weight-title"><Lines text={t('weight.title')} /></h3>
@@ -86,7 +107,6 @@ const memoryShare = Math.max((weightExample.memoryMb / weightExample.sessionsMb)
       </figure>
       <p class="weight-note"><Lines text={t('weight.note')} /></p>
     </div>
-    <p class="pilot" data-reveal><Lines text={t('pricing.pilot')} /></p>
   </div>
 </section>
 
@@ -114,11 +134,32 @@ const memoryShare = Math.max((weightExample.memoryMb / weightExample.sessionsMb)
     display: grid;
     grid-template-rows: auto auto 1fr auto;
     gap: 4px;
+    /* относительное позиционирование держит метку «Выгодно» на рамке карточки */
+    position: relative;
+    /* min-width: 0 позволяет карточкам сжиматься в сетке на телефоне без горизонтального скролла */
     min-width: 0;
     padding: 24px 18px 20px;
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     background: var(--surface);
+  }
+
+  .plan--best {
+    border-color: rgb(124 157 255 / 0.45);
+  }
+
+  /* Метка выгодной ступени висит на верхней рамке: текст карточки не сдвигается у соседей без метки */
+  .plan-best {
+    position: absolute;
+    top: -10px;
+    right: 12px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--brand);
+    color: var(--brand-ink);
+    font-family: var(--font-accent);
+    font-size: 12px;
+    line-height: 1.4;
   }
 
   .plan--free {
@@ -319,5 +360,84 @@ const memoryShare = Math.max((weightExample.memoryMb / weightExample.sessionsMb)
     color: var(--fg-muted);
     font-size: 15px;
     text-align: center;
+  }
+
+  .local {
+    display: grid;
+    grid-template-areas: 'head' 'rows' 'cta';
+    gap: 20px;
+    margin-top: 32px;
+    padding: 28px 24px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, rgb(46 91 228 / 0.16), rgb(46 91 228 / 0.03)), var(--surface);
+  }
+
+  @media (min-width: 860px) {
+    .local {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      grid-template-areas: 'head rows' 'head cta';
+      gap: 20px 32px;
+      align-items: start;
+    }
+  }
+
+  .local-head {
+    display: grid;
+    grid-area: head;
+    gap: 12px;
+    align-content: start;
+  }
+
+  .local-title {
+    font-family: var(--font-title);
+    font-size: 24px;
+    line-height: 1.2;
+  }
+
+  .local-price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .local-amount {
+    color: var(--brand-bright);
+    font-family: var(--font-accent);
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+
+  .local-once {
+    color: var(--fg-faint);
+    font-size: 15px;
+  }
+
+  .local-rows {
+    display: grid;
+    grid-area: rows;
+    gap: 8px;
+    color: var(--fg-soft);
+    font-size: 15px;
+  }
+
+  /* Каждая строка списка начинается с маркера: Lines отдаёт span, поэтому маркер рисует псевдоэлемент */
+  .local-rows :global(.ln) {
+    position: relative;
+    padding-left: 18px;
+  }
+
+  .local-rows :global(.ln)::before {
+    position: absolute;
+    left: 0;
+    color: var(--brand-bright);
+    content: '—';
+  }
+
+  .local-cta {
+    grid-area: cta;
+    justify-self: start;
   }
 </style>
